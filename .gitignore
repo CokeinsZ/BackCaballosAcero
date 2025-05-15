@@ -1,0 +1,32 @@
+# Build directories
+bin/
+obj/
+
+# Rider IDE files (JetBrains)
+.idea/
+*.sln.iml
+
+# Visual Studio & .NET
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Dotnet Core cache & tooling
+.vscode/
+*.dotCover
+*.ncrunch*
+_ReSharper*/
+*.DotSettings.user
+
+# Logs and temporary files
+logs/
+*.log
+
+# Secrets & env
+.env
+
+# OS generated
+.DS_Store
+Thumbs.db
