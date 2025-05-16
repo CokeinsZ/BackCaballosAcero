@@ -9,7 +9,7 @@ public class Motorcycle
     public required string model { get; set; }
     public required string cc { get; set; }
     public string? color { get; set; }
-    public JsonElement? details { get; set; }
+    public string? details { get; set; }
     public DateTime created_at { get; set; }
     public DateTime updated_at { get; set; }
 }

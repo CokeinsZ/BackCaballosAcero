@@ -35,3 +35,10 @@ public enum UserStatus
     [Description("Banned")]
     Banned = 3
 }
+
+public interface IUserRole
+{
+    public const string User = "1";
+
+    public const string Admin = "2";
+}

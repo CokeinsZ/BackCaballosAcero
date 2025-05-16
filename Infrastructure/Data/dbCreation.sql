@@ -58,4 +58,15 @@ CREATE TABLE Refresh_Tokens
         ON DELETE CASCADE
 );
 
+CREATE TABLE Motorcycles(
+    id SERIAL PRIMARY KEY,
+    brand VARCHAR(32) NOT NULL,
+    model VARCHAR(32) NOT NULL,
+    cc VARCHAR(3) NOT NULL,
+    color VARCHAR(32),
+    details JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
 
