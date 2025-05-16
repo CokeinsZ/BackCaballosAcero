@@ -100,6 +100,7 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<ResetPasswordValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<VerifyUserValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<ChangeStatusValidator>();
         
         builder.Services.AddValidatorsFromAssemblyContaining<CreateMotorcycleValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateMotorcycleValidator>();
