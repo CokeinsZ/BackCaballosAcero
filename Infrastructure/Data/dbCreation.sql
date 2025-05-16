@@ -58,4 +58,16 @@ CREATE TABLE Refresh_Tokens
         ON DELETE CASCADE
 );
 
+CREATE TABLE Statistics (
+    id SERIAL PRIMARY KEY,
+    total_income DECIMAL(12, 2) NOT NULL,
+    best_seller VARCHAR(100),
+    selling_distribution TEXT,
+    branch_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (branch_id) REFERENCES Branches(id)
+);
+
+-- Índice para búsquedas por sede y fecha
+CREATE INDEX idx_statistics_branch_date ON Statistics(branch_id, created_at);
 

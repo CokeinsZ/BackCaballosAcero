@@ -1,0 +1,78 @@
+|- Api
+  |- Controllers
+    |- AuthController.cs
+    |- UserController.cs
+  |- Properties
+    |- launchSettings.json
+  |- Api.csproj
+  |- Api.http
+  |- appsettings.Development.json
+  |- appsettings.json
+  |- Program.cs
+|- Application
+  |- Services
+    |- AuthService.cs
+    |- UserService.cs
+  |- Tools
+    |- RandomCodeGenerator.cs
+  |- Validator
+    |- User
+      |- CreateUserValidator.cs
+      |- LoginUserValidator.cs
+      |- ResetPasswordValidator.cs
+      |- UpdateUserValidator.cs
+      |- VerifyUserValidator.cs
+  |- Application.csproj
+|- Core
+  |- DTOs
+    |- AuthDto.cs
+    |- UserDto.cs
+  |- Entities
+    |- Branch.cs
+    |- MotoInventory.cs
+    |- Motorcycle.cs
+    |- Post.cs
+    |- Role.cs
+    |- SecurityCodes.cs
+    |- User.cs
+  |- Interfaces
+    |- Email
+      |- EmailSettings.cs
+      |- HtmlMessage.cs
+      |- IEmailService.cs
+    |- PopulatedEntities
+      |- PopulatedMotoInventory.cs
+      |- PopulatedPost.cs
+      |- PopulatedUser.cs
+    |- RepositoriesInterfaces
+      |- IMotorcycleRepository.cs
+      |- IRefreshTokenRepository.cs
+      |- IUserRepository.cs
+      |- IVerificationCodesRepository.cs
+    |- Security
+      |- IJWTService.cs
+    |- Services
+      |- IAuthService.cs
+      |- IUserService.cs
+  |- Security
+    |- JwtSettings.cs
+  |- Core.csproj
+|- Infrastructure
+  |- Data
+    |- Repositories
+      |- RefreshTokenRepository.cs
+      |- UserRepository.cs
+      |- VerificationCodesRepository.cs
+    |- BaseConnection.cs
+    |- dbCreation.sql
+  |- Email
+    |- EmailService.cs
+  |- Middleware
+    |- ExceptionHandlerMiddleware.cs
+    |- RateLimitingMiddleware.cs
+  |- Security
+    |- JWTService.cs
+  |- Infrastructure.csproj
+|- .gitignore
+|- BackCaballosAcero.sln
+|- estructura_limpia.txt
