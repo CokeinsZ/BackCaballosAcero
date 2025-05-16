@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using Application.Services;
+using Application.Tools;
 using Application.Validator.Motorcycle;
 using Core.Entities;
 using Core.Interfaces.Email;
@@ -111,6 +112,8 @@ internal static class ServiceCollectionExtensions
     {
         builder.Services.AddScoped<IJWTService, JWTService>();
         builder.Services.AddScoped<JWTService>();  
+        builder.Services.AddScoped<EncryptionHelper>(provider =>
+            new EncryptionHelper(builder.Configuration.GetSection("EncryptionSettings")["Key"], builder.Configuration.GetSection("EncryptionSettings")["Iv"]));
         builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         
         builder.Services.AddScoped<IAuthService, AuthService>();

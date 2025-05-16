@@ -29,7 +29,7 @@ public enum MotoStatus
     [Description("Under Customization")]
     UnderCustomization = 2,
     
-    [Description("Ready to Deliver")]
+    [Description("Ready")]
     ReadyToDeliver = 3,
     
     [Description("Delivered")]
