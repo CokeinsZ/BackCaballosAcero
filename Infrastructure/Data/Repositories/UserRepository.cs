@@ -174,7 +174,7 @@ public class UserRepository: BaseConnection, IUserRepository
     public async Task<bool> ChangeStatus(int id, string status)
     {
         await using var connection = await GetConnectionAsync();
-        const string query = "UPDATE Users SET status = @Status WHERE id = @Id";
+        const string query = "UPDATE Users SET status = CAST(@Status AS user_status) WHERE id = @Id";
         return await connection.ExecuteAsync(query, new { Status = status, Id = id }) > 0;
     }
 
