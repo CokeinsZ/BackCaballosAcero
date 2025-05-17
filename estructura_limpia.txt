@@ -1,22 +1,106 @@
+|- .idea
+  |- .idea.BackCaballosAcero
+    |- .idea
+      |- dataSources
+        |- 6e505a61-3e81-4f52-a556-65365015b0b0
+          |- storage_v2
+            |- _src_
+              |- database
+                |- caballos_acero_db.m8PxWA
+                  |- schema
+                    |- information_schema.FNRwLQ.meta
+                    |- pg_catalog.0S1ZNQ.meta
+                    |- public.abK9xQ.meta
+                |- caballos_acero_db.m8PxWA.meta
+        |- 6e505a61-3e81-4f52-a556-65365015b0b0.xml
+      |- .gitignore
+      |- dataSources.local.xml
+      |- dataSources.xml
+      |- indexLayout.xml
+      |- projectSettingsUpdater.xml
+      |- sqldialects.xml
+      |- vcs.xml
+      |- workspace.xml
 |- Api
+  |- bin
+    |- Debug
+      |- net9.0
   |- Controllers
     |- AuthController.cs
+    |- MotorcyclesController.cs
+    |- PaymentMethodsController.cs
+    |- StatisticsController.cs
     |- UserController.cs
+  |- obj
+    |- Debug
+      |- net9.0
+        |- ref
+        |- refint
+        |- .NETCoreApp,Version=v9.0.AssemblyAttributes.cs
+        |- Api.AssemblyInfo.cs
+        |- Api.AssemblyInfoInputs.cache
+        |- Api.assets.cache
+        |- Api.csproj.AssemblyReference.cache
+        |- Api.GeneratedMSBuildEditorConfig.editorconfig
+        |- Api.GlobalUsings.g.cs
+    |- Api.csproj.nuget.dgspec.json
+    |- Api.csproj.nuget.g.props
+    |- Api.csproj.nuget.g.targets
+    |- project.assets.json
+    |- project.nuget.cache
+    |- project.packagespec.json
+    |- rider.project.model.nuget.info
+    |- rider.project.restore.info
   |- Properties
     |- launchSettings.json
-  |- Api.csproj
   |- Api.http
   |- appsettings.Development.json
   |- appsettings.json
   |- Program.cs
 |- Application
+  |- bin
+    |- Debug
+      |- net9.0
+  |- obj
+    |- Debug
+      |- net9.0
+        |- ref
+        |- refint
+        |- .NETCoreApp,Version=v9.0.AssemblyAttributes.cs
+        |- Application.AssemblyInfo.cs
+        |- Application.AssemblyInfoInputs.cache
+        |- Application.assets.cache
+        |- Application.csproj.AssemblyReference.cache
+        |- Application.GeneratedMSBuildEditorConfig.editorconfig
+        |- Application.GlobalUsings.g.cs
+    |- Application.csproj.nuget.dgspec.json
+    |- Application.csproj.nuget.g.props
+    |- Application.csproj.nuget.g.targets
+    |- project.assets.json
+    |- project.nuget.cache
+    |- project.packagespec.json
+    |- rider.project.model.nuget.info
+    |- rider.project.restore.info
   |- Services
     |- AuthService.cs
+    |- CardService.cs
+    |- MotorcycleService.cs
+    |- StatisticsService.cs
     |- UserService.cs
   |- Tools
+    |- EncryptionHelper.cs
     |- RandomCodeGenerator.cs
   |- Validator
+    |- Motorcycle
+      |- CreateMotorcycleValidator.cs
+      |- FilterMotorcycleValidator.cs
+      |- UpdateMotorcycleValidator.cs
     |- User
+      |- PaymentMethods
+        |- ChangeCardStatusValidator.cs
+        |- CreateCardValidator.cs
+        |- UpdateCardValidator.cs
+      |- ChangeStatusValidator.cs
       |- CreateUserValidator.cs
       |- LoginUserValidator.cs
       |- ResetPasswordValidator.cs
@@ -24,16 +108,24 @@
       |- VerifyUserValidator.cs
   |- Application.csproj
 |- Core
+  |- bin
+    |- Debug
+      |- net9.0
   |- DTOs
     |- AuthDto.cs
+    |- MotorcycleDto.cs
+    |- PaymentMethodDto.cs
+    |- StatisticsDto.cs
     |- UserDto.cs
   |- Entities
     |- Branch.cs
+    |- Card.cs
     |- MotoInventory.cs
     |- Motorcycle.cs
     |- Post.cs
     |- Role.cs
     |- SecurityCodes.cs
+    |- Statistics.cs
     |- User.cs
   |- Interfaces
     |- Email
@@ -45,6 +137,7 @@
       |- PopulatedPost.cs
       |- PopulatedUser.cs
     |- RepositoriesInterfaces
+      |- ICardRepository.cs
       |- IMotorcycleRepository.cs
       |- IRefreshTokenRepository.cs
       |- IUserRepository.cs
@@ -53,14 +146,52 @@
       |- IJWTService.cs
     |- Services
       |- IAuthService.cs
+      |- ICardService.cs
+      |- IMotorcycleService.cs
       |- IUserService.cs
+    |- IStatisticsRepository.cs
+  |- obj
+    |- Debug
+      |- net9.0
+        |- ref
+        |- refint
+        |- .NETCoreApp,Version=v9.0.AssemblyAttributes.cs
+        |- Core.AssemblyInfo.cs
+        |- Core.AssemblyInfoInputs.cache
+        |- Core.assets.cache
+        |- Core.csproj.AssemblyReference.cache
+        |- Core.csproj.CoreCompileInputs.cache
+        |- Core.csproj.FileListAbsolute.txt
+        |- Core.GeneratedMSBuildEditorConfig.editorconfig
+        |- Core.GlobalUsings.g.cs
+        |- Core.sourcelink.json
+    |- Core.csproj.nuget.dgspec.json
+    |- Core.csproj.nuget.g.props
+    |- Core.csproj.nuget.g.targets
+    |- project.assets.json
+    |- project.nuget.cache
+    |- project.packagespec.json
+    |- rider.project.model.nuget.info
+    |- rider.project.restore.info
   |- Security
     |- JwtSettings.cs
   |- Core.csproj
 |- Infrastructure
+  |- bin
+    |- Debug
+      |- net9.0
   |- Data
+    |- Queries
+      |- BestSellerQuery.sql
+      |- HistoricalStatisticsQuery.sql
+      |- QueryHelper.cs
+      |- SalesDistributionQuery.sql
+      |- TotalIncomeQuery.sql
     |- Repositories
+      |- CardRepository.cs
+      |- MotorcycleRepository.cs
       |- RefreshTokenRepository.cs
+      |- StatisticsRepository.cs
       |- UserRepository.cs
       |- VerificationCodesRepository.cs
     |- BaseConnection.cs
@@ -70,6 +201,24 @@
   |- Middleware
     |- ExceptionHandlerMiddleware.cs
     |- RateLimitingMiddleware.cs
+  |- obj
+    |- Debug
+      |- net9.0
+        |- ref
+        |- refint
+        |- .NETCoreApp,Version=v9.0.AssemblyAttributes.cs
+        |- Infrastructure.AssemblyInfo.cs
+        |- Infrastructure.AssemblyInfoInputs.cache
+        |- Infrastructure.assets.cache
+        |- Infrastructure.GlobalUsings.g.cs
+    |- Infrastructure.csproj.nuget.dgspec.json
+    |- Infrastructure.csproj.nuget.g.props
+    |- Infrastructure.csproj.nuget.g.targets
+    |- project.assets.json
+    |- project.nuget.cache
+    |- project.packagespec.json
+    |- rider.project.model.nuget.info
+    |- rider.project.restore.info
   |- Security
     |- JWTService.cs
   |- Infrastructure.csproj

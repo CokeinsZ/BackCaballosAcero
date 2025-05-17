@@ -1,26 +1,51 @@
-public async Task<Statistics> GenerateStatisticsAsync(int branchId, DateTime startDate, DateTime endDate)
+using Core.Entities;
+using Core.Interfaces.RepositoriesInterfaces;
+using Dapper;
+using Infrastructure.Data.Queries;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
+
+namespace Infrastructure.Data.Repositories;
+
+public class StatisticsRepository : BaseConnection, IStatisticsRepository
 {
-    var parameters = new { branchId, startDate, endDate };
+    private readonly IConfiguration _config;
     
-    var totalIncome = await QueryFirstOrDefaultAsync<decimal>(
-        await LoadQueryAsync("TotalIncomeQuery"), parameters);
-        
-    var bestSeller = await QueryFirstOrDefaultAsync<string>(
-        await LoadQueryAsync("BestSellerQuery"), parameters);
-        
-    var distribution = await QueryAsync<(string BranchName, int SalesCount, decimal TotalSales)>(
-        await LoadQueryAsync("SalesDistributionQuery"), parameters);
-    
-    // Formatear distribución para almacenamiento
-    var distributionText = string.Join(", ", 
-        distribution.Select(d => $"{d.BranchName}: {d.SalesCount} ventas (${d.TotalSales})"));
-    
-    return new Statistics
+    // Obtener connectionString desde IConfiguration
+    public StatisticsRepository(IConfiguration config) 
+        : base(config.GetConnectionString("DefaultConnection")) 
     {
-        TotalIncome = totalIncome,
-        BestSeller = bestSeller ?? "No hay ventas registradas",
-        SellingDistribution = distributionText,
-        CreatedAt = DateTime.Now,
-        BranchId = branchId
-    };
+        _config = config;
+    }
+
+    public async Task<Statistics?> GenerateStatisticsAsync(int branchId, DateTime startDate, DateTime endDate)
+    {
+        string totalIncomeQuery = await QueryHelper.LoadQueryAsync("TotalIncomeQuery");
+        string bestSellerQuery = await QueryHelper.LoadQueryAsync("BestSellerQuery");
+        string distributionQuery = await QueryHelper.LoadQueryAsync("SalesDistributionQuery");
+
+        // Aplicar reemplazos después de cargar
+        totalIncomeQuery = totalIncomeQuery
+            .Replace("Bill_Motorcycle", "bill_motorcycle")
+            .Replace("Motoinventory", "motoinventory");
+
+        bestSellerQuery = bestSellerQuery
+            .Replace("Motorcycles", "motorcycles");
+
+        distributionQuery = distributionQuery
+            .Replace("Branches", "branches");
+
+        var parameters = new { branchId, startDate, endDate };
+
+        await using var connection = await GetConnectionAsync();
+        
+        // Ejecutar consultas
+        return new Statistics
+        {
+            TotalIncome = await connection.QueryFirstOrDefaultAsync<decimal>(totalIncomeQuery, parameters),
+            BestSeller = await connection.QueryFirstOrDefaultAsync<string>(bestSellerQuery, parameters) ?? "Sin ventas",
+            BranchId = branchId,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
 }

@@ -1,4 +1,7 @@
 // Infrastructure/Data/Queries/QueryHelper.cs
+
+using System.Reflection;
+
 namespace Infrastructure.Data.Queries;
 
 public static class QueryHelper

@@ -1,3 +1,7 @@
+using Core.DTOs;
+using Core.Entities;
+using Core.Interfaces.RepositoriesInterfaces;
+
 namespace Application.Services;
 
 public class StatisticsService
@@ -15,16 +19,25 @@ public class StatisticsService
         
         return new StatisticsDto
         {
-            TotalIncome = statistics.TotalIncome,
-            BestSellingProduct = statistics.BestSellingProduct,
-            SalesDistribution = statistics.SalesDistribution,
+            // Conversión explícita de decimal a double
+            TotalIncome = Convert.ToDouble(statistics.TotalIncome),
+            
+            // Mapeo de nombres diferentes (BestSeller -> BestSellingProduct)
+            BestSellingProduct = statistics.BestSeller,
+            
+            // Convertir string a List<string> (si viene separado por comas)
+            SalesDistribution = statistics.SellingDistribution?.Split(',').ToList() ?? new List<string>(),
+            
             GenerationDate = DateTime.Now,
-            BranchName = statistics.Branch?.Direccion ?? "Todas las sedes"
+            
+            // Obtener nombre de la sede usando el ID (requeriría una nueva consulta)
+            BranchName = $"Sede {statistics.BranchId}" // Temporal
         };
     }
     
     public async Task<List<StatisticsDto>> GetHistoricalStatistics(int branchId)
     {
-        // Similar al anterior pero para múltiples registros
+        // Implementación similar
+        throw new NotImplementedException();
     }
 }

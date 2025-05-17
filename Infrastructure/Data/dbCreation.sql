@@ -152,4 +152,12 @@ CREATE TABLE MotoInventory
         ON DELETE CASCADE
 );
 
+CREATE VIEW bill_motorcycle AS
+SELECT
+    mi.id AS inventory_moto_id,
+    u.id AS user_id,
+    NOW() AS created_at 
+FROM motoinventory mi
+         JOIN users u ON mi.branch_id = u.id; 
+
 
