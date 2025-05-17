@@ -41,6 +41,11 @@ public class ResetPasswordDto
 
 }
 
+public class ChangeStatusDto
+{
+    public required string status { get; set; }
+}
+
 public class VerifyUserDto
 {
     public required string verification_code { get; set; }

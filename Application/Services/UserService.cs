@@ -22,7 +22,22 @@ public class UserService: IUserService
         _verificationCodesRepo = verificationCodesRepo;
         _passwordHasher = passwordHasher;
     }
-    
+
+    public async Task<IEnumerable<User>> GetAll()
+    {
+        return await _userRepo.GetAll();
+    }
+
+    public async Task<User?> GetById(int id)
+    {
+        return await _userRepo.GetById(id);
+    }
+
+    public async Task<User?> GetByEmail(string email)
+    {
+        return await _userRepo.GetByEmail(email);
+    }
+
     public async Task<User> Register(CreateUserDto userDto)
     {
         var userExists = await _userRepo.GetByEmail(userDto.email);
@@ -44,12 +59,18 @@ public class UserService: IUserService
         userDto.password = hashedPassword;
 
         var newUser = await _userRepo.Add(userDto);
-            
-        var code = RandomCodeGenerator.GenerateRandomCode(6);
-        await _verificationCodesRepo.Add(code, newUser.id);
-        await _emailService.SendVerificationEmail(newUser, code);
+
+        await SendVerificationCode(newUser);
         
         return newUser;
+    }
+
+    public async Task<User> Update(UpdateUserDto dto, int id)
+    {
+        var updated = await _userRepo.Update(dto, id);
+        if (updated == null)
+            throw new KeyNotFoundException($"User with id {id} not found.");
+        return updated;
     }
 
     public async Task<bool> VerifyUser(VerifyUserDto userDto)
@@ -66,5 +87,52 @@ public class UserService: IUserService
 
         await _verificationCodesRepo.Remove(user.id);
         return await _userRepo.VerifyUser(user.id);
+    }
+
+    public async Task<bool> ChangePassword(ResetPasswordDto userDto, int id)
+    {
+        var user = await _userRepo.GetById(id);
+        if (user == null) throw new Exception("User not found");
+        
+        if (!user.status!.Equals("Active"))
+            throw new Exception("User not active");
+        
+        var storedCode = await _verificationCodesRepo.GetCode(user.id);
+        if (string.IsNullOrWhiteSpace(storedCode)) throw new Exception("User have no security codes");
+        
+        if (storedCode != userDto.verification_code) throw new Exception("Invalid verification code");
+
+        var hashedPassword = _passwordHasher.HashPassword(user, userDto.password);
+        userDto.password = hashedPassword;
+        
+        await _verificationCodesRepo.Remove(user.id);
+        return await _userRepo.ChangePassword(id, userDto.password);
+    }
+
+    public async Task<bool> ChangeStatus(int id, string status)
+    {
+        return await _userRepo.ChangeStatus(id, status);
+    }
+
+    public async Task Delete(int id)
+    {
+        await _userRepo.Delete(id);
+    }
+
+    public async Task SendVerificationCode(int id)
+    {
+        var user = await _userRepo.GetById(id);
+        if (user == null) throw new Exception("User not found");
+        
+        var code = RandomCodeGenerator.GenerateRandomCode(6);
+        await _verificationCodesRepo.Add(code, user.id);
+        await _emailService.SendVerificationEmail(user, code);
+    }
+    
+    public async Task SendVerificationCode(User user)
+    {
+        var code = RandomCodeGenerator.GenerateRandomCode(6);
+        await _verificationCodesRepo.Add(code, user.id);
+        await _emailService.SendVerificationEmail(user, code);
     }
 }

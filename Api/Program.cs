@@ -1,5 +1,8 @@
+using System.Security.Claims;
 using System.Text;
 using Application.Services;
+using Application.Tools;
+using Application.Validator.Motorcycle;
 using Core.Entities;
 using Core.Interfaces.Email;
 using Core.Interfaces.RepositoriesInterfaces;
@@ -15,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
 using Application.Validator.User;
 using Core.Interfaces;
+using Application.Validator.User.PaymentMethods;
 using Core.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,21 +67,33 @@ internal static class ServiceCollectionExtensions
                 ValidIssuer = builder.Configuration["Jwt:Issuer"],
                 ValidAudience = builder.Configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                
+                RoleClaimType = ClaimTypes.Role
             };
         });
+        
+        builder.Services.AddAuthorization();
+
     }
 
     public static void ConfigureRepositories(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IUserRepository>(provider =>
             new UserRepository(builder.Configuration.GetConnectionString("Postgres")!));
+
+        builder.Services.AddScoped<ICardRepository>(provider =>
+            new CardRepository(builder.Configuration.GetConnectionString("Postgres")!)
+        );
         
         builder.Services.AddScoped<IRefreshTokenRepository>(provider =>
             new RefreshTokenRepository(builder.Configuration.GetConnectionString("Postgres")!));
         
         builder.Services.AddScoped<IVerificationCodesRepository>(provider =>
             new VerificationCodesRepository(builder.Configuration.GetConnectionString("Postgres")!));
+        
+        builder.Services.AddScoped<IMotorcycleRepository>(provider =>
+            new MotorcycleRepository(builder.Configuration.GetConnectionString("Postgres")!));
     }
 
     public static void ConfigureOptions(this WebApplicationBuilder builder)
@@ -93,15 +109,29 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<ResetPasswordValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<VerifyUserValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<ChangeStatusValidator>();
+
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateCardValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateCardValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<ChangeCardStatusValidator>();
+        
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateMotorcycleValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateMotorcycleValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<FilterMotorcycleValidator>();
     }
 
     public static void ConfigureApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IJWTService, JWTService>();
         builder.Services.AddScoped<JWTService>();  
+        builder.Services.AddScoped<EncryptionHelper>(provider =>
+            new EncryptionHelper(builder.Configuration.GetSection("EncryptionSettings")["Key"]!, builder.Configuration.GetSection("EncryptionSettings")["Iv"]!));
         builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+        
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IMotorcycleService, MotorcycleService>();
+        builder.Services.AddScoped<ICardService, CardService>();
         
         builder.Services.AddScoped<IEmailService, EmailService>();
     }

@@ -29,7 +29,7 @@ public class AuthService: IAuthService
         var user = await _userRepo.GetByEmail(userDto.email);
         if (user == null) throw new Exception("Invalid Email");
         
-        if (!user.status.Equals("Active")) throw new Exception("User not active");
+        if (!user.status!.Equals("Active")) throw new Exception("User not active");
 
         var passwordValid = _passwordHasher.VerifyHashedPassword(user, user.password, userDto.password) !=
                             PasswordVerificationResult.Failed;

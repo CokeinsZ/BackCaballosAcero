@@ -5,12 +5,17 @@
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
 
-CREATE TABLE Roles (
-    id SERIAL PRIMARY KEY,
+CREATE TABLE Roles
+(
+    id   SERIAL PRIMARY KEY,
     name VARCHAR(32)
 );
 
 CREATE TYPE user_status AS ENUM ('Active', 'Not Verified', 'Inactive', 'Banned');
+CREATE TYPE card_status AS ENUM ('Active', 'Inactive');
+CREATE TYPE post_status AS ENUM ('Available', 'SoldOut');
+CREATE TYPE motoInventory_status AS ENUM ('Available', 'Sold', 'Under Customization', 'Ready', 'Delivered');
+CREATE TYPE card_type AS ENUM ('Credit', 'Debit');
 
 CREATE TABLE Users
 (
@@ -30,6 +35,22 @@ CREATE TABLE Users
     updated_at              TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (role_id) REFERENCES Roles (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE Card
+(
+    id              SERIAL PRIMARY KEY,
+    user_id         INT,
+    owner           VARCHAR(32) NOT NULL,
+    pan             VARCHAR(255) NOT NULL,
+    cvv             VARCHAR(255) NOT NULL,
+    type            card_type NOT NULL,
+    expiration_date VARCHAR(5) NOT NULL,
+    status          card_status DEFAULT 'Active',
+
+    FOREIGN KEY (user_id) REFERENCES Users (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -70,4 +91,65 @@ CREATE TABLE Statistics (
 
 -- Índice para búsquedas por sede y fecha
 CREATE INDEX idx_statistics_branch_date ON Statistics(branch_id, created_at);
+CREATE TABLE Branches
+(
+    id      SERIAL PRIMARY KEY,
+    name    VARCHAR(32) NOT NULL,
+    country VARCHAR(32) NOT NULL,
+    city    VARCHAR(32) NOT NULL,
+    address VARCHAR(32)
+);
+
+CREATE TABLE Post
+(
+    id         SERIAL PRIMARY KEY,
+    branch_id  INT,
+    price      MONEY,
+    status     post_status,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (branch_id) REFERENCES Branches (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
+CREATE TABLE Motorcycles
+(
+    id         SERIAL PRIMARY KEY,
+    brand      VARCHAR(32) NOT NULL,
+    model      VARCHAR(32) NOT NULL,
+    cc         VARCHAR(3)  NOT NULL,
+    color      VARCHAR(32),
+    details    JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE MotoInventory
+(
+    id             SERIAL PRIMARY KEY,
+    moto_id        INT,
+    branch_id      INT,
+    post_id        INT,
+    license_plate  VARCHAR(7),
+    km             VARCHAR(7),
+    customizations JSONB,
+    status         motoInventory_status,
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (moto_id) REFERENCES Motorcycles (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (branch_id) REFERENCES Branches (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (post_id) REFERENCES Post (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
+
 
