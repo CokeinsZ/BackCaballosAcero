@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
 using Application.Validator.User;
+using Application.Validator.User.PaymentMethods;
 using Core.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -77,6 +78,10 @@ internal static class ServiceCollectionExtensions
     {
         builder.Services.AddScoped<IUserRepository>(provider =>
             new UserRepository(builder.Configuration.GetConnectionString("Postgres")!));
+
+        builder.Services.AddScoped<ICardRepository>(provider =>
+            new CardRepository(builder.Configuration.GetConnectionString("Postgres")!)
+        );
         
         builder.Services.AddScoped<IRefreshTokenRepository>(provider =>
             new RefreshTokenRepository(builder.Configuration.GetConnectionString("Postgres")!));
@@ -102,6 +107,10 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddValidatorsFromAssemblyContaining<ResetPasswordValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<VerifyUserValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<ChangeStatusValidator>();
+
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateCardValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateCardValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<ChangeCardStatusValidator>();
         
         builder.Services.AddValidatorsFromAssemblyContaining<CreateMotorcycleValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateMotorcycleValidator>();
@@ -113,12 +122,13 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddScoped<IJWTService, JWTService>();
         builder.Services.AddScoped<JWTService>();  
         builder.Services.AddScoped<EncryptionHelper>(provider =>
-            new EncryptionHelper(builder.Configuration.GetSection("EncryptionSettings")["Key"], builder.Configuration.GetSection("EncryptionSettings")["Iv"]));
+            new EncryptionHelper(builder.Configuration.GetSection("EncryptionSettings")["Key"]!, builder.Configuration.GetSection("EncryptionSettings")["Iv"]!));
         builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IMotorcycleService, MotorcycleService>();
+        builder.Services.AddScoped<ICardService, CardService>();
         
         builder.Services.AddScoped<IEmailService, EmailService>();
     }

@@ -52,7 +52,7 @@ public class MotorcyclesController : ControllerBase
         return Ok(motorcycles);
     }
 
-    [Authorize(Roles = IUserRole.Admin)] 
+    [Authorize(Roles = ""+IUserRole.Admin+","+IUserRole.Branch)] 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateMotorcycleDto dto)
     {
@@ -67,7 +67,7 @@ public class MotorcyclesController : ControllerBase
         return Ok(createdMotorcycle);
     }
 
-    [Authorize(Roles = IUserRole.Admin)] 
+    [Authorize(Roles = ""+IUserRole.Admin+","+IUserRole.Branch)] 
     [HttpPatch("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateMotorcycleDto dto)
     {
@@ -80,7 +80,7 @@ public class MotorcyclesController : ControllerBase
         return Ok(updated);
     }
 
-    [Authorize(Roles = IUserRole.Admin)] 
+    [Authorize(Roles = ""+IUserRole.Admin+","+IUserRole.Branch)] 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
