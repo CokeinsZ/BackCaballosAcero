@@ -122,7 +122,7 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddScoped<IJWTService, JWTService>();
         builder.Services.AddScoped<JWTService>();  
         builder.Services.AddScoped<EncryptionHelper>(provider =>
-            new EncryptionHelper(builder.Configuration.GetSection("EncryptionSettings")["Key"]!, builder.Configuration.GetSection("EncryptionSettings")["Iv"]!));
+            new EncryptionHelper(builder.Configuration.GetSection("Encryption")["Key"]!, builder.Configuration.GetSection("Encryption")["Iv"]!));
         builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         
         builder.Services.AddScoped<IAuthService, AuthService>();

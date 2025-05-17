@@ -47,7 +47,7 @@ CREATE TABLE Card
     pan             VARCHAR(255) NOT NULL,
     cvv             VARCHAR(255) NOT NULL,
     type            card_type NOT NULL,
-    expiration_date VARCHAR(5) NOT NULL,
+    expiration_date VARCHAR(255) NOT NULL,
     status          card_status DEFAULT 'Active',
 
     FOREIGN KEY (user_id) REFERENCES Users (id)

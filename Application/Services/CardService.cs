@@ -19,12 +19,26 @@ public class CardService: ICardService
     
     public async Task<IEnumerable<Card>> GetByUserId(int userId)
     {
-        return await _cardRepository.GetByUserId(userId);
+        var cards = await _cardRepository.GetByUserId(userId);
+        foreach (var card in cards)
+        {
+            card.pan = _encryptionHelper.Decrypt(card.pan);
+            card.cvv = _encryptionHelper.Decrypt(card.cvv);
+            card.expiration_date = _encryptionHelper.Decrypt(card.expiration_date);
+        }
+        return cards;
     }
 
     public async Task<Card> GetById(int id)
     {
-        return await _cardRepository.GetById(id);
+        var card = await _cardRepository.GetById(id);
+        if (card != null)
+        {
+            card.pan = _encryptionHelper.Decrypt(card.pan);
+            card.cvv = _encryptionHelper.Decrypt(card.cvv);
+            card.expiration_date = _encryptionHelper.Decrypt(card.expiration_date);
+        }
+        return card;
     }
 
     public async Task<Card> Create(CreateCardDto dto)

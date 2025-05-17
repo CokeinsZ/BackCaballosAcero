@@ -74,6 +74,9 @@ public class PaymentMethodsController : ControllerBase
         dto.user_id = userId;
         var vr = await _createCardValidator.ValidateAsync(dto);
         if (!vr.IsValid) return BadRequest(vr.Errors);
+        
+        var err = EnsureAdminOrOwn(userId);
+        if (err != null) return err;
 
         var card = await _cardService.Create(dto);
         return Ok(card);
