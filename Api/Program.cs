@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
 using Application.Validator.User;
+using Core.Interfaces;
 using Core.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
