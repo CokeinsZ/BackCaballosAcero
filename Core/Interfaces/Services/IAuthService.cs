@@ -7,6 +7,6 @@ public interface IAuthService
 {
     Task<AuthResponseDto> Login(LoginUserDto userDto);
     
-    Task<string> RefreshToken(string refreshToken);
+    Task<string> RefreshToken(string refreshToken, int? branchId);
     
 }

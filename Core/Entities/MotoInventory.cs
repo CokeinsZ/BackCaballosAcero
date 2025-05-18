@@ -11,8 +11,8 @@ public class MotoInventory
     public int post_id { get; set; }
     public string? license_plate { get; set; }
     public required string km { get; set; }
-    public JsonElement? customizations { get; set; }
-    public MotoStatus status { get; set; }
+    public string? customizations { get; set; }
+    public string status { get; set; }
     public DateTime created_at { get; set; }
     public DateTime updated_at { get; set; }
 

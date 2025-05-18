@@ -117,13 +117,13 @@ CREATE TABLE Motorcycles
 CREATE TABLE MotoInventory
 (
     id             SERIAL PRIMARY KEY,
-    moto_id        INT,
-    branch_id      INT,
-    post_id        INT,
-    license_plate  VARCHAR(7),
-    km             VARCHAR(7),
+    moto_id        INT NOT NULL,
+    branch_id      INT NOT NULL,
+    post_id        INT DEFAULT NULL,
+    license_plate  VARCHAR(7) DEFAULT NULL,
+    km             VARCHAR(7) DEFAULT '0',
     customizations JSONB,
-    status         motoInventory_status,
+    status         motoInventory_status DEFAULT 'Available',
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

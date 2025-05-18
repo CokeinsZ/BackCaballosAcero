@@ -6,6 +6,6 @@ public class Branch
     public required string name { get; set; }
     public required string country { get; set; }
     public required string city { get; set; }
-    public required string address { get; set; }
+    public string? address { get; set; }
 
 }

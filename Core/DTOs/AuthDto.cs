@@ -9,4 +9,5 @@ public class AuthResponseDto
 public class RefreshTokenDto
 {
     public required string RefreshToken { get; set; }
+    public int? brachId { get; set; }
 }

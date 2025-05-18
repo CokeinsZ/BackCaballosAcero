@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
             return BadRequest("Refresh token is required");
         }
         
-        var newToken = await _authService.RefreshToken(dto.RefreshToken);
+        var newToken = await _authService.RefreshToken(dto.RefreshToken, dto.brachId);
         return Ok(new { AccessToken = newToken });
     }
 }

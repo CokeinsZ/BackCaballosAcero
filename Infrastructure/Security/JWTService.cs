@@ -20,16 +20,22 @@ public class JWTService : IJWTService
         _jwtSettings = jwtSettings.Value;
     }
 
-    public string GenerateToken(User user, double expiration)
+    public string GenerateToken(User user, double expiration, int? branchId)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
-            new Claim(ClaimTypes.Role, user.role_id.ToString()!)
+            new Claim(ClaimTypes.Role, user.role_id.ToString()!),
         };
+        
+        // Si es usuario de tipo 'Branch', añadimos también el branchId
+        if (user.role_id.ToString() == IUserRole.Branch && branchId.HasValue)
+        {
+            claims.Add(new Claim("branchId", branchId.ToString()));
+        }
 
         var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
@@ -42,14 +48,14 @@ public class JWTService : IJWTService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateAccessToken(User user)
+    public string GenerateAccessToken(User user, int? branchId)
     {
-        return GenerateToken(user, _jwtSettings.AccessTokenExpiration);
+        return GenerateToken(user, _jwtSettings.AccessTokenExpiration, branchId);
     }
 
-    public string GenerateRefreshToken(User user)
+    public string GenerateRefreshToken(User user, int? branchId)
     {
-        return GenerateToken(user, _jwtSettings.RefreshTokenExpiration);
+        return GenerateToken(user, _jwtSettings.RefreshTokenExpiration, branchId);
     }
     
     public ClaimsPrincipal ValidateToken(string token)

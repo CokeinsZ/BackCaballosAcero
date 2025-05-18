@@ -2,6 +2,8 @@ using System.Security.Claims;
 using System.Text;
 using Application.Services;
 using Application.Tools;
+using Application.Validator.Branch;
+using Application.Validator.MotoInventory;
 using Application.Validator.Motorcycle;
 using Core.Entities;
 using Core.Interfaces.Email;
@@ -80,8 +82,7 @@ internal static class ServiceCollectionExtensions
             new UserRepository(builder.Configuration.GetConnectionString("Postgres")!));
 
         builder.Services.AddScoped<ICardRepository>(provider =>
-            new CardRepository(builder.Configuration.GetConnectionString("Postgres")!)
-        );
+            new CardRepository(builder.Configuration.GetConnectionString("Postgres")!));
         
         builder.Services.AddScoped<IRefreshTokenRepository>(provider =>
             new RefreshTokenRepository(builder.Configuration.GetConnectionString("Postgres")!));
@@ -89,8 +90,14 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddScoped<IVerificationCodesRepository>(provider =>
             new VerificationCodesRepository(builder.Configuration.GetConnectionString("Postgres")!));
         
+        builder.Services.AddScoped<IBranchRepository>(provider =>
+            new BranchRepository(builder.Configuration.GetConnectionString("Postgres")!));
+        
         builder.Services.AddScoped<IMotorcycleRepository>(provider =>
             new MotorcycleRepository(builder.Configuration.GetConnectionString("Postgres")!));
+        
+        builder.Services.AddScoped<IMotoInventoryRepository>(provider =>
+            new MotoInventoryRepository(builder.Configuration.GetConnectionString("Postgres")!));
     }
 
     public static void ConfigureOptions(this WebApplicationBuilder builder)
@@ -111,10 +118,17 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddValidatorsFromAssemblyContaining<CreateCardValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateCardValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<ChangeCardStatusValidator>();
+
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateBranchValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateBranchValidator>();
         
         builder.Services.AddValidatorsFromAssemblyContaining<CreateMotorcycleValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateMotorcycleValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<FilterMotorcycleValidator>();
+
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateMotoInventoryValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateMotoInventoryValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<ChangeMotoInventoryStatusValidator>();
     }
 
     public static void ConfigureApplicationServices(this WebApplicationBuilder builder)
@@ -127,6 +141,8 @@ internal static class ServiceCollectionExtensions
         
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IBranchService, BranchService>();
+        builder.Services.AddScoped<IMotoInventoryService, MotoInventoryService>();
         builder.Services.AddScoped<IMotorcycleService, MotorcycleService>();
         builder.Services.AddScoped<ICardService, CardService>();
         

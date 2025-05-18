@@ -35,8 +35,8 @@ public class AuthService: IAuthService
                             PasswordVerificationResult.Failed;
         if (!passwordValid) throw new Exception("Incorrect password");
 
-        var accesToken = _jwtService.GenerateAccessToken(user);
-        var refreshToken = _jwtService.GenerateRefreshToken(user);
+        var accesToken = _jwtService.GenerateAccessToken(user, userDto.branchId);
+        var refreshToken = _jwtService.GenerateRefreshToken(user, userDto.branchId);
         
         await _refreshTokenRepo.AddRefreshToken(user.id, refreshToken);
 
@@ -47,7 +47,7 @@ public class AuthService: IAuthService
         };
     }
 
-    public async Task<string> RefreshToken(string refreshToken)
+    public async Task<string> RefreshToken(string refreshToken, int? branchId)
     {
         try
         {
@@ -72,7 +72,7 @@ public class AuthService: IAuthService
                 throw new Exception("Token invalido");
         
             // Generar un nuevo token de acceso
-            return _jwtService.GenerateAccessToken(user);
+            return _jwtService.GenerateAccessToken(user, branchId);
         }
         catch (SecurityTokenException ex)
         {

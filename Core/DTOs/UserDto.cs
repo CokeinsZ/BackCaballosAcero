@@ -31,6 +31,7 @@ public class LoginUserDto
 {
     public required string email { get; set; }
     public required string password { get; set; }
+    public int? branchId { get; set; }
 
 }
 
