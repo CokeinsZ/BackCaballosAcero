@@ -5,6 +5,7 @@ using Application.Tools;
 using Application.Validator.Branch;
 using Application.Validator.MotoInventory;
 using Application.Validator.Motorcycle;
+using Application.Validator.Post;
 using Core.Entities;
 using Core.Interfaces.Email;
 using Core.Interfaces.RepositoriesInterfaces;
@@ -98,6 +99,10 @@ internal static class ServiceCollectionExtensions
         
         builder.Services.AddScoped<IMotoInventoryRepository>(provider =>
             new MotoInventoryRepository(builder.Configuration.GetConnectionString("Postgres")!));
+        
+        builder.Services.AddScoped<IPostRepository>(provider =>
+            new PostRepository(builder.Configuration.GetConnectionString("Postgres")!));
+        
     }
 
     public static void ConfigureOptions(this WebApplicationBuilder builder)
@@ -129,6 +134,10 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddValidatorsFromAssemblyContaining<CreateMotoInventoryValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdateMotoInventoryValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<ChangeMotoInventoryStatusValidator>();
+
+        builder.Services.AddValidatorsFromAssemblyContaining<CreatePostValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdatePostValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<ChangePostStatusValidator>();
     }
 
     public static void ConfigureApplicationServices(this WebApplicationBuilder builder)
@@ -143,6 +152,7 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IBranchService, BranchService>();
         builder.Services.AddScoped<IMotoInventoryService, MotoInventoryService>();
+        builder.Services.AddScoped<IPostService, PostService>();
         builder.Services.AddScoped<IMotorcycleService, MotorcycleService>();
         builder.Services.AddScoped<ICardService, CardService>();
         

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      db:
+
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Infrastructure/Data/dbCreation.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./Infrastructure/Data/triggers.sql:/docker-entrypoint-initdb.d/02-triggers.sql
+    environment:
+      - POSTGRES_USER=caballosacerouser
+      - POSTGRES_PASSWORD=1020
+      - POSTGRES_DB=caballos_acero_db
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

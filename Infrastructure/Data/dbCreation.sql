@@ -93,7 +93,7 @@ CREATE TABLE Post
     id         SERIAL PRIMARY KEY,
     branch_id  INT,
     price      MONEY,
-    status     post_status,
+    status     post_status DEFAULT 'Available',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
