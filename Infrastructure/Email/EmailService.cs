@@ -14,13 +14,13 @@ public class EmailService : IEmailService
     {
         _emailSettings = emailSettings.Value;
     }
-    
-    public Task SendPurchaseNotification(User user, string motoDetails)
+
+    public Task SendPurchaseNotification(User user, MotoInventory moto)
     {
         throw new NotImplementedException();
     }
 
-    public Task SendConfirmationEmail(User user, string motoDetails, bool isConfirmed)
+    public Task SendStatusUpdateEmail(User user, MotoInventory moto)
     {
         throw new NotImplementedException();
     }

@@ -1,5 +1,6 @@
 ﻿using Core.DTOs;
 using Core.Entities;
+using Core.Interfaces.Email;
 using Core.Interfaces.RepositoriesInterfaces;
 using Core.Interfaces.Services;
 
@@ -8,10 +9,14 @@ namespace Application.Services;
 public class MotoInventoryService : IMotoInventoryService
 {
     private readonly IMotoInventoryRepository _repo;
+    private readonly IBillRepository _billRepository;
+    private readonly IEmailService _emailService;
 
-    public MotoInventoryService(IMotoInventoryRepository repo)
+    public MotoInventoryService(IMotoInventoryRepository repo, IBillRepository billRepository, IEmailService emailService)
     {
         _repo = repo;
+        _billRepository = billRepository;
+        _emailService = emailService;
     }
 
     public async Task<IEnumerable<MotoInventory>> GetByBranch(int branchId)
@@ -20,6 +25,11 @@ public class MotoInventoryService : IMotoInventoryService
     public async Task<MotoInventory?> GetById(int id)
         => await _repo.GetById(id);
 
+    public async Task<IEnumerable<MotoInventory>> GetByPostId(int postId)
+    {
+        return await _repo.GetByPostId(postId);
+    }
+
     public async Task<MotoInventory> Create(CreateMotoInventoryDto dto)
         => await _repo.Create(dto);
 
@@ -27,7 +37,31 @@ public class MotoInventoryService : IMotoInventoryService
         => await _repo.Update(dto, id);
 
     public async Task<bool> ChangeStatus(int id, string status)
-        => await _repo.ChangeStatus(id, status);
+    {
+        var motoInventory = await GetById(id);
+        if (motoInventory == null) throw new Exception("Moto not found");
+
+        var ok = await _repo.ChangeStatus(id, status);
+        
+        if (ok && motoInventory.bill_id != null)
+        {
+            var user = await _billRepository.GetUser(motoInventory.bill_id.Value);
+            if (status.Equals("Sold")) await _emailService.SendPurchaseNotification(user, motoInventory);
+            else if (status.Equals("Ready")) await _emailService.SendReadyToPickupEmail(user, motoInventory);
+            else await _emailService.SendStatusUpdateEmail(user, motoInventory);
+        }
+
+        return ok;
+    }
+
+    public async Task<bool> AsignBill(int id, int billId)
+    {
+        var motoInventory = await GetById(id);
+        if (motoInventory.bill_id != null) throw new Exception("Moto already has a bill");
+        if (motoInventory.status != "Available") throw new Exception("Moto not available");
+        
+        return await _repo.AsignBill(id, billId);
+    }
 
     public async Task<bool> Delete(int id)
         => await _repo.Delete(id);

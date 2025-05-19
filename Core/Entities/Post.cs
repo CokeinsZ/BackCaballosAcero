@@ -6,6 +6,8 @@ public class Post
 {
     public int id { get; set; }
     public int branch_id { get; set; }
+    public string? description { get; set; }
+    public string? availableCustomizations { get; set; }
     public double price { get; set; }
     public string? status { get; set; }
     public DateTime created_at { get; set; }

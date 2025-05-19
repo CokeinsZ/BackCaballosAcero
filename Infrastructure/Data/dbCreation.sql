@@ -9,6 +9,7 @@ CREATE TYPE card_status AS ENUM ('Active', 'Inactive');
 CREATE TYPE post_status AS ENUM ('Available', 'SoldOut');
 CREATE TYPE motoInventory_status AS ENUM ('Available', 'Sold', 'Under Customization', 'Ready', 'Delivered');
 CREATE TYPE card_type AS ENUM ('Credit', 'Debit');
+CREATE TYPE payment_method AS ENUM ('Cash', 'Card');
 
 CREATE TABLE Users
 (
@@ -109,18 +110,33 @@ CREATE TABLE Motorcycles
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE Bill
+(
+    id             SERIAL PRIMARY KEY,
+    user_id        INT   NULL,
+    amount         MONEY NOT NULL,
+    discount       MONEY          DEFAULT 0,
+    payment_method payment_method DEFAULT 'Cash',
+    created_at     TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES Users (id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+);
+
 CREATE TABLE MotoInventory
 (
     id             SERIAL PRIMARY KEY,
     moto_id        INT NOT NULL,
     branch_id      INT NOT NULL,
-    post_id        INT DEFAULT NULL,
-    license_plate  VARCHAR(7) DEFAULT NULL,
-    km             VARCHAR(7) DEFAULT '0',
+    post_id        INT                  DEFAULT NULL,
+    bill_id        INT NULL,
+    license_plate  VARCHAR(7)           DEFAULT NULL,
+    km             VARCHAR(7)           DEFAULT '0',
     customizations JSONB,
     status         motoInventory_status DEFAULT 'Available',
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at     TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (moto_id) REFERENCES Motorcycles (id)
         ON UPDATE CASCADE
@@ -132,7 +148,11 @@ CREATE TABLE MotoInventory
 
     FOREIGN KEY (post_id) REFERENCES Post (id)
         ON UPDATE CASCADE
-        ON DELETE SET NULL
+        ON DELETE SET NULL,
+
+    FOREIGN KEY (bill_id) REFERENCES Bill (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 INSERT INTO Roles (id, name) VALUES (1, 'user'), (2, 'admin'), (3, 'branch');

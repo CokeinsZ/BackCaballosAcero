@@ -4,8 +4,9 @@ namespace Core.Interfaces.Email;
 
 public interface IEmailService
 {
-    Task SendPurchaseNotification(User user, string motoDetails);
-    Task SendConfirmationEmail(User user, string motoDetails, bool isConfirmed);
+    Task SendPurchaseNotification(User user, MotoInventory moto);
+    Task SendStatusUpdateEmail(User user, MotoInventory moto);
+    Task SendReadyToPickupEmail(User user, MotoInventory moto);
     Task SendResetPasswordEmail(User user, string code);
     Task SendVerificationEmail(User user, string code);
 }

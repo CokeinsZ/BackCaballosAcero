@@ -44,6 +44,14 @@ public class PostService: IPostService
         return new PopulatedPost(post, branch, motoInventories);
     }
 
+    public async Task<IEnumerable<MotoInventory>> GetMotoInventoriesByPostId(int postId)
+    {
+        var existing = await _postRepository.GetById(postId);
+        if (existing == null) throw new Exception("Post not found");
+        
+        return await _motoInventoryRepository.GetByPostId(postId);
+    }
+
     public async Task<Post> Create(CreatePostDto dto)
     {
         var post = await _postRepository.Create(dto);
@@ -96,6 +104,14 @@ public class PostService: IPostService
         // re-assign motoInventories if provided
         if (dto.motoInventories != null)
         {
+            // remove previous motoInventories from previous post
+            var previousMotoInventories = await _motoInventoryRepository.GetByPostId(id);
+            foreach (var previousMotoInventory in previousMotoInventories)
+            {
+                await _motoInventoryRepository.Update(new UpdateMotoInventoryDto {post_id = null}, previousMotoInventory.id);
+            }
+            
+            // assign new motoInventories to new post
             foreach (var motoInventoryId in dto.motoInventories)
             {
                 var motoInventory = await _motoInventoryRepository.GetById(motoInventoryId);

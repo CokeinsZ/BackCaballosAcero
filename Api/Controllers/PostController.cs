@@ -72,12 +72,8 @@ public class PostController : ControllerBase
     [HttpPatch("{id:int}")]
     public async Task<IActionResult> Update(int branchId, int id, [FromBody] UpdatePostDto dto)
     {
-        System.Console.WriteLine(dto);
-
         var err = EnsureAdminOrBranch(branchId);
         if (err != null) return err;
-
-        System.Console.WriteLine(dto);
         
         var vr = await _updateValidator.ValidateAsync(dto);
         if (!vr.IsValid) return BadRequest(vr.Errors);

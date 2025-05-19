@@ -106,6 +106,14 @@ public class MotoInventoryRepository : BaseConnection, IMotoInventoryRepository
         return affected > 0;
     }
 
+    public async Task<bool> AsignBill(int id, int billId)
+    {
+        await using var conn = await GetConnectionAsync();
+        const string sql = "UPDATE MotoInventory SET bill_id = @BillId WHERE id = @Id";
+        var affected = await conn.ExecuteAsync(sql, new { Id = id, BillId = billId });
+        return affected > 0;
+    }
+
     public async Task<bool> Delete(int id)
     {
         await using var conn = await GetConnectionAsync();

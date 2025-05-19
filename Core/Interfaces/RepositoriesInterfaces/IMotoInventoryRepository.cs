@@ -11,5 +11,6 @@ public interface IMotoInventoryRepository
     Task<MotoInventory> Create(CreateMotoInventoryDto dto);
     Task<MotoInventory?> Update(UpdateMotoInventoryDto dto, int id);
     Task<bool> ChangeStatus(int id, string status);
+    Task<bool> AsignBill(int id, int billId);
     Task<bool> Delete(int id);
 }

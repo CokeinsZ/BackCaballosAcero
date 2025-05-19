@@ -13,6 +13,8 @@ public class PopulatedPost: Post
         this.MotoInventories = m;
         this.id = p.id;
         this.branch_id = b.id;
+        this.description = p.description;
+        this.availableCustomizations = p.availableCustomizations;
         this.price = p.price;
         this.status = p.status;
         this.created_at = p.created_at;
