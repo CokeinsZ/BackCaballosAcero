@@ -24,6 +24,13 @@ public class MotoInventoryRepository : BaseConnection, IMotoInventoryRepository
         return await conn.QuerySingleOrDefaultAsync<MotoInventory>(sql, new { Id = id });
     }
 
+    public async Task<IEnumerable<MotoInventory>> GetByPostId(int postId)
+    {
+        await using var conn = await GetConnectionAsync();
+        const string sql = "SELECT * FROM MotoInventory WHERE post_id = @PostId";
+        return await conn.QueryAsync<MotoInventory>(sql, new { PostId = postId });
+    }
+
     public async Task<MotoInventory> Create(CreateMotoInventoryDto dto)
     {
         await using var conn = await GetConnectionAsync();
@@ -34,6 +41,7 @@ public class MotoInventoryRepository : BaseConnection, IMotoInventoryRepository
                 (@MotoId, @BranchId, @PostId, @LicensePlate, @Km, CAST(@Customizations AS JSONB))
             RETURNING *;
         """;
+        
         return await conn.QuerySingleAsync<MotoInventory>(sql, new
         {
             MotoId         = dto.moto_id,

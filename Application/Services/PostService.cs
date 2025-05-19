@@ -1,5 +1,6 @@
 ﻿using Core.DTOs;
 using Core.Entities;
+using Core.Interfaces.PopulatedEntities;
 using Core.Interfaces.RepositoriesInterfaces;
 using Core.Interfaces.Services;
 
@@ -8,22 +9,39 @@ namespace Application.Services;
 public class PostService: IPostService
 {
     private readonly IPostRepository _postRepository;
+    private readonly IBranchRepository _branchRepository;
     private readonly IMotoInventoryRepository _motoInventoryRepository;
     
-    public PostService(IPostRepository postRepository, IMotoInventoryRepository motoInventoryRepository)
+    public PostService(IPostRepository postRepository, IBranchRepository branch, IMotoInventoryRepository motoInventoryRepository)
     {
         _postRepository = postRepository;
+        _branchRepository = branch;
         _motoInventoryRepository = motoInventoryRepository;
     }
     
-    public async Task<IEnumerable<Post>> GetByBranch(int branchId)
+    public async Task<IEnumerable<PopulatedPost>> GetByBranch(int branchId)
     {
-        return await _postRepository.GetByBranch(branchId);
+        var posts = await _postRepository.GetByBranch(branchId);
+        var populatedPosts = new List<PopulatedPost>();
+        foreach (var post in posts)
+        {
+            var motoInventories = await _motoInventoryRepository.GetByPostId(post.id);
+            var branch = await _branchRepository.GetById(post.branch_id);
+            populatedPosts.Add(new PopulatedPost(post, branch, motoInventories));
+        }
+        
+        return populatedPosts;
     }
 
-    public async Task<Post?> GetById(int id)
+    public async Task<PopulatedPost?> GetById(int id)
     {
-        return await _postRepository.GetById(id);
+        var post = await _postRepository.GetById(id);
+        
+        if (post == null) return null;
+        
+        var motoInventories = await _motoInventoryRepository.GetByPostId(post.id);
+        var branch = await _branchRepository.GetById(post.branch_id);
+        return new PopulatedPost(post, branch, motoInventories);
     }
 
     public async Task<Post> Create(CreatePostDto dto)
@@ -34,10 +52,17 @@ public class PostService: IPostService
         {
             var motoInventory = await _motoInventoryRepository.GetById(motoInventoryId);
             if (motoInventory == null)
+            {
+                await _postRepository.Delete(post.id);
                 throw new Exception($"Moto in inventory with id {motoInventoryId} not found");
 
+            }
+
             if (motoInventory.status != "Available")
+            {
+                await _postRepository.Delete(post.id);
                 throw new Exception($"Moto in inventory with id {motoInventoryId} not available for sell");
+            }
             
             await _motoInventoryRepository.Update(new UpdateMotoInventoryDto {post_id = post.id}, motoInventoryId);
             
@@ -48,10 +73,13 @@ public class PostService: IPostService
 
     public async Task<Post?> Update(UpdatePostDto dto, int id)
     {
+        var post = await _postRepository.GetById(id);
+        if (post == null) return null;
+        
         if (dto.price == null && dto.motoInventories == null) throw new Exception("No data to update");
         
         if (dto.price != null)
-            await _postRepository.Update(new UpdatePostDto {price = dto.price}, id);
+            await _postRepository.Update(dto, id);
 
         if (dto.motoInventories != null)
         {
@@ -59,17 +87,22 @@ public class PostService: IPostService
             {
                 var motoInventory = await _motoInventoryRepository.GetById(motoInventoryId);
                 if (motoInventory == null)
+                {
                     throw new Exception($"Moto in inventory with id {motoInventoryId} not found");
 
+                }
+
                 if (motoInventory.status != "Available")
+                {
                     throw new Exception($"Moto in inventory with id {motoInventoryId} not available for sell");
+                }
             
                 await _motoInventoryRepository.Update(new UpdateMotoInventoryDto {post_id = id}, motoInventoryId);
             
             }
         }
         
-        return await _postRepository.GetById(id);
+        return await GetById(id);
     }
 
     public async Task<bool> ChangeStatus(int id, string status)

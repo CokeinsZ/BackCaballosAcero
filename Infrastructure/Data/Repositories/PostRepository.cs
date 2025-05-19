@@ -29,7 +29,7 @@ public class PostRepository: BaseConnection, IPostRepository
         await using var conn = await GetConnectionAsync();
         const string sql = """
             INSERT INTO Post (branch_id, price)
-            VALUES (@BranchId, @Price)
+            VALUES (@BranchId, CAST(@Price::text as MONEY))
             RETURNING *;
         """;
         return await conn.QuerySingleAsync<Post>(sql, new
@@ -45,7 +45,7 @@ public class PostRepository: BaseConnection, IPostRepository
         
         if (!dto.price.HasValue) return null;
 
-        const string sql = "UPDATE Post SET price = @Price WHERE id = @Id";
+        const string sql = "UPDATE Post SET price = CAST(@Price::text as MONEY) WHERE id = @Id";
         
         await conn.ExecuteAsync(sql, new { Id = id, Price = dto.price });
 

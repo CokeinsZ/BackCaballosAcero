@@ -33,9 +33,9 @@ public class PostController : ControllerBase
     {
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
         var claim = User.FindFirst("branchId")?.Value;
-        if (role == null || claim == null)
+        if (role == null )
             return Unauthorized();
-        if (role == IUserRole.Branch && int.Parse(claim) != branchId)
+        if (role == IUserRole.Branch && (claim == null || int.Parse(claim) != branchId))
             return Forbid();
         return null;
     }
@@ -43,9 +43,6 @@ public class PostController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetByBranch(int branchId)
     {
-        var err = EnsureAdminOrBranch(branchId);
-        if (err != null) return err;
-
         var posts = await _service.GetByBranch(branchId);
         return Ok(posts);
     }
@@ -53,9 +50,6 @@ public class PostController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int branchId, int id)
     {
-        var err = EnsureAdminOrBranch(branchId);
-        if (err != null) return err;
-
         var post = await _service.GetById(id);
         if (post == null) return NotFound();
         if (post.branch_id != branchId) return Forbid();
@@ -78,9 +72,13 @@ public class PostController : ControllerBase
     [HttpPatch("{id:int}")]
     public async Task<IActionResult> Update(int branchId, int id, [FromBody] UpdatePostDto dto)
     {
+        System.Console.WriteLine(dto);
+
         var err = EnsureAdminOrBranch(branchId);
         if (err != null) return err;
 
+        System.Console.WriteLine(dto);
+        
         var vr = await _updateValidator.ValidateAsync(dto);
         if (!vr.IsValid) return BadRequest(vr.Errors);
 

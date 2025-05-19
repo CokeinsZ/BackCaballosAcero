@@ -33,9 +33,9 @@ public class MotoInventoryController : ControllerBase
     {
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
         var claim = User.FindFirst("branchId")?.Value;
-        if (role == null || claim == null)
+        if (role == null )
             return Unauthorized();
-        if (role == IUserRole.Branch && int.Parse(claim) != branchId)
+        if (role == IUserRole.Branch && ( claim == null || int.Parse(claim) != branchId))
             return Forbid();
         return null;
     }

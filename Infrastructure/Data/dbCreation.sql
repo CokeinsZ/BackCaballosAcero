@@ -1,11 +1,4 @@
-﻿CREATE DATABASE caballos_acero_db
-    WITH OWNER = caballosacerouser
-    ENCODING = 'UTF8'
-    LOCALE_PROVIDER = 'libc'
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
-
-CREATE TABLE Roles
+﻿CREATE TABLE Roles
 (
     id   SERIAL PRIMARY KEY,
     name VARCHAR(32)
@@ -139,5 +132,7 @@ CREATE TABLE MotoInventory
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+INSERT INTO Roles (id, name) VALUES (1, 'user'), (2, 'admin'), (3, 'branch');
 
 
