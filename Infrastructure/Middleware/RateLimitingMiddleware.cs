@@ -35,7 +35,12 @@ public class RateLimitingMiddleware
             return;
         }
 
-        _cache.Set(key, counter + 1);
+        _cache.Set(
+            key,
+            counter + 1,
+            new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = _period }
+        );
+
         await _next(context);
     }
 }
