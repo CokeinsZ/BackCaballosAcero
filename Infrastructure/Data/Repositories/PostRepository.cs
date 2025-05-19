@@ -28,26 +28,63 @@ public class PostRepository: BaseConnection, IPostRepository
     {
         await using var conn = await GetConnectionAsync();
         const string sql = """
-            INSERT INTO Post (branch_id, price)
-            VALUES (@BranchId, CAST(@Price::text as MONEY))
+            INSERT INTO Post
+                (branch_id, description, available_customizations, price)
+            VALUES
+                (
+                  @BranchId,
+                  @Description,
+                  CAST(@AvailableCustomizations AS JSONB),
+                  CAST(@Price::text AS MONEY)
+                )
             RETURNING *;
         """;
         return await conn.QuerySingleAsync<Post>(sql, new
         {
-            BranchId = dto.branch_id,
-            Price    = dto.price
+            BranchId               = dto.branch_id,
+            Description            = dto.description,
+            AvailableCustomizations = dto.availableCustomizations?.GetRawText(),
+            Price                  = dto.price
         });
     }
 
     public async Task<Post?> Update(UpdatePostDto dto, int id)
     {
         await using var conn = await GetConnectionAsync();
-        
-        if (!dto.price.HasValue) return null;
+        var sb = new StringBuilder("UPDATE Post SET ");
+        var hasSet = false;
 
-        const string sql = "UPDATE Post SET price = CAST(@Price::text as MONEY) WHERE id = @Id";
-        
-        await conn.ExecuteAsync(sql, new { Id = id, Price = dto.price });
+        if (dto.description is not null)
+        {
+            sb.Append("description = @Description");
+            hasSet = true;
+        }
+
+        if (dto.availableCustomizations.HasValue)
+        {
+            if (hasSet) sb.Append(", ");
+            sb.Append("available_customizations = CAST(@AvailableCustomizations AS JSONB)");
+            hasSet = true;
+        }
+
+        if (dto.price.HasValue)
+        {
+            if (hasSet) sb.Append(", ");
+            sb.Append("price = CAST(@Price::text AS MONEY)");
+            hasSet = true;
+        }
+
+        if (!hasSet)
+            return null;
+
+        sb.Append(" WHERE id = @Id");
+        await conn.ExecuteAsync(sb.ToString(), new
+        {
+            Id                      = id,
+            Description             = dto.description,
+            AvailableCustomizations = dto.availableCustomizations?.GetRawText(),
+            Price                   = dto.price
+        });
 
         return await GetById(id);
     }

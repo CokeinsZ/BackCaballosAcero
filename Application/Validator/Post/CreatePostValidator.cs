@@ -20,5 +20,11 @@ public class CreatePostValidator : AbstractValidator<CreatePostDto>
             .WithMessage("La lista de motos no puede estar vacía.")
             .Must(list => list.All(id => id > 0))
             .WithMessage("Cada moto en la lista debe tener un id mayor que 0.");
+
+        RuleFor(x => x.description)
+            .MaximumLength(500)
+            .WithMessage("La descripción debe tener máximo 500 caracteres.")
+            .When(x => x.description is not null);
+
     }
 }

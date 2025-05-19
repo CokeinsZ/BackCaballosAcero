@@ -83,12 +83,14 @@ CREATE TABLE Branches
 
 CREATE TABLE Post
 (
-    id         SERIAL PRIMARY KEY,
-    branch_id  INT,
-    price      MONEY,
-    status     post_status DEFAULT 'Available',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id                       SERIAL PRIMARY KEY,
+    branch_id                INT,
+    description              TEXT,
+    available_customizations JSONB,
+    price                    MONEY,
+    status                   post_status DEFAULT 'Available',
+    created_at               TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at               TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (branch_id) REFERENCES Branches (id)
         ON UPDATE CASCADE
@@ -130,7 +132,7 @@ CREATE TABLE MotoInventory
 
     FOREIGN KEY (post_id) REFERENCES Post (id)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE SET NULL
 );
 
 INSERT INTO Roles (id, name) VALUES (1, 'user'), (2, 'admin'), (3, 'branch');

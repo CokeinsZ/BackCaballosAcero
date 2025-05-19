@@ -73,14 +73,27 @@ public class PostService: IPostService
 
     public async Task<Post?> Update(UpdatePostDto dto, int id)
     {
-        var post = await _postRepository.GetById(id);
-        if (post == null) return null;
-        
-        if (dto.price == null && dto.motoInventories == null) throw new Exception("No data to update");
-        
-        if (dto.price != null)
-            await _postRepository.Update(dto, id);
+        var existing = await _postRepository.GetById(id);
+        if (existing == null)
+            return null;
 
+        if (dto.price == null
+            && dto.description == null
+            && !dto.availableCustomizations.HasValue
+            && dto.motoInventories == null)
+        {
+            throw new Exception("No data to update");
+        }
+
+        // apply description, customizations or price update
+        if (dto.price.HasValue
+            || dto.description != null
+            || dto.availableCustomizations.HasValue)
+        {
+            await _postRepository.Update(dto, id);
+        }
+
+        // re-assign motoInventories if provided
         if (dto.motoInventories != null)
         {
             foreach (var motoInventoryId in dto.motoInventories)

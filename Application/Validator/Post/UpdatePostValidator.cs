@@ -19,5 +19,11 @@ public class UpdatePostValidator : AbstractValidator<UpdatePostDto>
             .Must(list => list != null && list.All(id => id > 0))
             .When(x => x.motoInventories is not null)
             .WithMessage("Cada moto en la lista debe tener un id mayor que 0.");
+
+        RuleFor(x => x.description)
+            .MaximumLength(500)
+            .WithMessage("La descripción debe tener máximo 500 caracteres.")
+            .When(x => x.description is not null);
+
     }
 }
