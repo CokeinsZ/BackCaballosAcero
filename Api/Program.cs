@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using Application.Services;
 using Application.Tools;
+using Application.Validator.Bill;
 using Application.Validator.Branch;
 using Application.Validator.MotoInventory;
 using Application.Validator.Motorcycle;
@@ -103,6 +104,9 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddScoped<IPostRepository>(provider =>
             new PostRepository(builder.Configuration.GetConnectionString("Postgres")!));
         
+        builder.Services.AddScoped<IBillRepository>(provider =>
+            new BillRepository(builder.Configuration.GetConnectionString("Postgres")!));
+        
     }
 
     public static void ConfigureOptions(this WebApplicationBuilder builder)
@@ -138,6 +142,9 @@ internal static class ServiceCollectionExtensions
         builder.Services.AddValidatorsFromAssemblyContaining<CreatePostValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<UpdatePostValidator>();
         builder.Services.AddValidatorsFromAssemblyContaining<ChangePostStatusValidator>();
+        
+        builder.Services.AddValidatorsFromAssemblyContaining<CreateBillValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<UpdateBillValidator>();
     }
 
     public static void ConfigureApplicationServices(this WebApplicationBuilder builder)
@@ -150,6 +157,7 @@ internal static class ServiceCollectionExtensions
         
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IBillService, BillService>();
         builder.Services.AddScoped<IBranchService, BranchService>();
         builder.Services.AddScoped<IMotoInventoryService, MotoInventoryService>();
         builder.Services.AddScoped<IPostService, PostService>();
