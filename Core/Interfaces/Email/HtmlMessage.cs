@@ -2,9 +2,9 @@
 
 public static class HtmlMessage
 {
-    public static string GetVerificationEmailTemplate(string name, string code) 
-    {
-      return $$"""
+  public static string GetVerificationEmailTemplate(string name, string code)
+  {
+    return $$"""
         <!DOCTYPE html>
         <html>
         <head>
@@ -117,5 +117,110 @@ public static class HtmlMessage
         </body>
         </html>
       """;
+  }
+
+  public static string GetPurchaseNotificationTemplate(string name, int motoId, string status)
+  {
+    return $$"""
+               <!DOCTYPE html>
+               <html>
+               <head>
+                 <meta charset="utf-8"/>
+                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                 <title>Confirmación de Compra</title>
+                 <style>
+                   body { font-family: 'Segoe UI', sans-serif; background:#f9f9f9; margin:0; padding:0; }
+                   .container { max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+                   h1 { color:#4a6ee0; }
+                   .details { margin:20px 0; }
+                   .btn { display:inline-block; background:#4a6ee0; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none; }
+                 </style>
+               </head>
+               <body>
+                 <div class="container">
+                   <h1>¡Compra Confirmada!</h1>
+                   <p>Hola <strong>{{name}}</strong>,</p>
+                   <p>Gracias por tu compra en <strong>Caballos de Acero</strong>. A continuación los detalles de tu motocicleta:</p>
+                   <div class="details">
+                     <p><strong>ID Inventario:</strong> {{motoId}}</p>
+                     <p><strong>Estado:</strong> {{status}}</p>
+                   </div>
+                   <p>Puedes revisar tu compra en el siguiente enlace:</p>
+                   <p><a href="https://tusitio.com/mis-compras" class="btn">Ver Mi Compra</a></p>
+                   <hr/>
+                   <p style="font-size:.8em; color:#888;">Si no realizaste esta compra, contacta a soporte inmediatamente.</p>
+                 </div>
+               </body>
+               </html>
+             """;
+  }
+  
+  public static string GetStatusUpdateTemplate(string name, int motoId, string status)
+  {
+    return $$"""
+               <!DOCTYPE html>
+               <html>
+               <head>
+                 <meta charset="utf-8"/>
+                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                 <title>Actualización de Estado</title>
+                 <style>
+                   body { font-family: 'Segoe UI', sans-serif; background:#f9f9f9; margin:0; padding:0; }
+                   .container { max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+                   h1 { color:#4a6ee0; }
+                   .details { margin:20px 0; }
+                 </style>
+               </head>
+               <body>
+                 <div class="container">
+                   <h1>Actualización de Estado</h1>
+                   <p>Hola <strong>{{name}}</strong>,</p>
+                   <p>El estado de tu motocicleta ha cambiado. Aquí los detalles:</p>
+                   <div class="details">
+                     <p><strong>ID Inventario:</strong> {{motoId}}</p>
+                     <p><strong>Nuevo Estado:</strong> {{status}}</p>
+                   </div>
+                   <p>Si tienes alguna duda, contacta a nuestro soporte.</p>
+                   <hr/>
+                   <p style="font-size:.8em; color:#888;">Este es un correo automático, por favor no respondas.</p>
+                 </div>
+               </body>
+               </html>
+             """;
+  }
+  
+  public static string GetReadyToPickupTemplate(string name, int motoId, string location)
+  {
+    return $$"""
+               <!DOCTYPE html>
+               <html>
+               <head>
+                 <meta charset="utf-8"/>
+                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                 <title>Tu motocicleta está lista</title>
+                 <style>
+                   body { font-family: 'Segoe UI', sans-serif; background:#f9f9f9; margin:0; padding:0; }
+                   .container { max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+                   h1 { color:#4a6ee0; }
+                   .details { margin:20px 0; }
+                   .btn { display:inline-block; background:#4a6ee0; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none; }
+                 </style>
+               </head>
+               <body>
+                 <div class="container">
+                   <h1>Listo para Recoger</h1>
+                   <p>Hola <strong>{{name}}</strong>,</p>
+                   <p>Tu motocicleta (ID {{motoId}}) ya está lista para ser recogida.</p>
+                   <div class="details">
+                     <p><strong>Ubicación de recogida:</strong> {{location}}</p>
+                   </div>
+                   <p>Puedes venir cuando quieras en nuestro horario de atención.</p>
+                   <p><a href="https://tusitio.com/mis-compras" class="btn">Ver detalles</a></p>
+                   <hr/>
+                   <p style="font-size:.8em; color:#888;">Este es un correo automático, por favor no respondas.</p>
+                 </div>
+               </body>
+               </html>
+             """;
   }
 }

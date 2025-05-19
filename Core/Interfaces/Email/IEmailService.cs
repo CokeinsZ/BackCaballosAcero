@@ -6,7 +6,7 @@ public interface IEmailService
 {
     Task SendPurchaseNotification(User user, MotoInventory moto);
     Task SendStatusUpdateEmail(User user, MotoInventory moto);
-    Task SendReadyToPickupEmail(User user, MotoInventory moto);
+    Task SendReadyToPickupEmail(User user, MotoInventory moto, Branch branch);
     Task SendResetPasswordEmail(User user, string code);
     Task SendVerificationEmail(User user, string code);
 }

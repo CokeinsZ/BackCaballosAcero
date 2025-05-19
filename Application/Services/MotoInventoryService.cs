@@ -11,12 +11,14 @@ public class MotoInventoryService : IMotoInventoryService
     private readonly IMotoInventoryRepository _repo;
     private readonly IBillRepository _billRepository;
     private readonly IEmailService _emailService;
+    private readonly IBranchRepository _branchRepository;
 
-    public MotoInventoryService(IMotoInventoryRepository repo, IBillRepository billRepository, IEmailService emailService)
+    public MotoInventoryService(IMotoInventoryRepository repo, IBillRepository billRepository, IEmailService emailService, IBranchRepository branchRepository)
     {
         _repo = repo;
         _billRepository = billRepository;
         _emailService = emailService;
+        _branchRepository = branchRepository;
     }
 
     public async Task<IEnumerable<MotoInventory>> GetByBranch(int branchId)
@@ -46,8 +48,9 @@ public class MotoInventoryService : IMotoInventoryService
         if (ok && motoInventory.bill_id != null)
         {
             var user = await _billRepository.GetUser(motoInventory.bill_id.Value);
+            var branch = await _branchRepository.GetById(motoInventory.branch_id);
             if (status.Equals("Sold")) await _emailService.SendPurchaseNotification(user, motoInventory);
-            else if (status.Equals("Ready")) await _emailService.SendReadyToPickupEmail(user, motoInventory);
+            else if (status.Equals("Ready")) await _emailService.SendReadyToPickupEmail(user, motoInventory, branch);
             else await _emailService.SendStatusUpdateEmail(user, motoInventory);
         }
 

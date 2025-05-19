@@ -15,14 +15,98 @@ public class EmailService : IEmailService
         _emailSettings = emailSettings.Value;
     }
 
-    public Task SendPurchaseNotification(User user, MotoInventory moto)
+
+    public async Task SendPurchaseNotification(User user, MotoInventory moto)
     {
-        throw new NotImplementedException();
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
+        message.To.Add(new MailboxAddress(user.name, user.email));
+        message.Subject = "Confirmación de Compra – Caballos de Acero";
+
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = HtmlMessage.GetPurchaseNotificationTemplate(
+                user.name,
+                moto.id,
+                moto.status
+            )
+        };
+        message.Body = bodyBuilder.ToMessageBody();
+
+        try
+        {
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.Auto);
+            await smtp.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al enviar notificación de compra: {ex.Message}");
+        }
     }
 
-    public Task SendStatusUpdateEmail(User user, MotoInventory moto)
+    public async Task SendStatusUpdateEmail(User user, MotoInventory moto)
     {
-        throw new NotImplementedException();
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
+        message.To.Add(new MailboxAddress(user.name, user.email));
+        message.Subject = "Actualización de Estado – Caballos de Acero";
+
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = HtmlMessage.GetStatusUpdateTemplate(
+                user.name,
+                moto.id,
+                moto.status
+            )
+        };
+        message.Body = bodyBuilder.ToMessageBody();
+
+        try
+        {
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.Auto);
+            await smtp.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al enviar actualización de estado: {ex.Message}");
+        }
+    }
+
+    public async Task SendReadyToPickupEmail(User user, MotoInventory moto, Branch branch)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
+        message.To.Add(new MailboxAddress(user.name, user.email));
+        message.Subject = "Tu motocicleta está lista – Caballos de Acero";
+
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = HtmlMessage.GetReadyToPickupTemplate(
+                user.name,
+                moto.id,
+                branch.country + ", " + branch.city + ", " + branch.address
+            )
+        };
+        message.Body = bodyBuilder.ToMessageBody();
+
+        try
+        {
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.Auto);
+            await smtp.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al enviar correo de recogida: {ex.Message}");
+        }
     }
 
     public Task SendResetPasswordEmail(User user, string code)
