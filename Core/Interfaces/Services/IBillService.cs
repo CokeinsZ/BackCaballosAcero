@@ -12,5 +12,6 @@ public interface IBillService
     Task<Bill?> GetById(int id);
     Task<Bill> Create(CreateBillDto dto);
     Task<Bill> Update(UpdateBillDto dto, int id);
+    Task<bool> Cancel(int id);
     Task<bool> Delete(int id);
 }

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Core.DTOs;
 using Core.Entities;
+using Core.Interfaces.PopulatedEntities;
 using Core.Interfaces.RepositoriesInterfaces;
 using Dapper;
 
@@ -15,8 +16,7 @@ public class BillRepository : BaseConnection, IBillRepository
         await using var conn = await GetConnectionAsync();
         const string sql = """
                            SELECT b.* FROM Bill b
-                           JOIN Bill_Motorcycle bm ON bm.bill_id = b.id
-                           JOIN MotoInventory mi ON mi.id = bm.inventory_moto_id
+                           JOIN MotoInventory mi ON mi.bill_id = b.id
                            JOIN Branches br ON br.id = mi.branch_id
                            WHERE br.id = @BranchId;
                            """;
@@ -45,8 +45,15 @@ public class BillRepository : BaseConnection, IBillRepository
     public async Task<User> GetUser(int billId)
     {
         await using var conn = await GetConnectionAsync();
-        const string sql = "SELECT u.* FROM Bill b JOIN User u ON u.id = b.user_id WHERE b.id = @BillId";
+        const string sql = "SELECT u.* FROM Users u JOIN Bill b ON b.user_id = u.id WHERE b.id = @BillId";
         return await conn.QuerySingleAsync<User>(sql, new { BillId = billId });
+    }
+
+    public async Task<IEnumerable<MotoInventory>> GetMotoInventory(int billId)
+    {
+        await using var conn = await GetConnectionAsync();
+        const string sql = "SELECT mi.* FROM MotoInventory JOIN Bill b ON b.id = mi.bill_id WHERE b.id = @BillId";
+        return await conn.QueryAsync<MotoInventory>(sql, new { BillId = billId });
     }
 
     public async Task<Bill?> GetById(int id)
@@ -66,7 +73,7 @@ public class BillRepository : BaseConnection, IBillRepository
                 (@UserId,
                  CAST(@Amount::text AS MONEY),
                  CAST(@Discount::text AS MONEY),
-                 @PaymentMethod)
+                 CAST(@PaymentMethod AS payment_method))
             RETURNING *;
         """;
         return await conn.QuerySingleAsync<Bill>(sql, new

@@ -18,8 +18,9 @@ public class UserController : ControllerBase
     private readonly IValidator<VerifyUserDto> _verifyUserValidator;
     private readonly IValidator<ResetPasswordDto> _resetPwdValidator;
     private readonly IValidator<ChangeStatusDto> _changeStatusValidator;
+    private readonly IValidator<ChangeRoleDto> _changeRoleValidator;
 
-    public UserController(IUserService userService, IValidator<CreateUserDto> createUserValidator, IValidator<UpdateUserDto> updateUserValidator, IValidator<VerifyUserDto> verifyUserValidator, IValidator<ResetPasswordDto> resetPwdValidator, IValidator<ChangeStatusDto> changeStatusValidator)
+    public UserController(IUserService userService, IValidator<CreateUserDto> createUserValidator, IValidator<UpdateUserDto> updateUserValidator, IValidator<VerifyUserDto> verifyUserValidator, IValidator<ResetPasswordDto> resetPwdValidator, IValidator<ChangeStatusDto> changeStatusValidator, IValidator<ChangeRoleDto> changeRoleValidator)
     {
         _userService = userService;
         _createUserValidator = createUserValidator;
@@ -27,6 +28,7 @@ public class UserController : ControllerBase
         _verifyUserValidator = verifyUserValidator;
         _resetPwdValidator = resetPwdValidator;
         _changeStatusValidator = changeStatusValidator;
+        _changeRoleValidator = changeRoleValidator;
     }
 
     private IActionResult? EnsureAdminOrOwn(int id)
@@ -145,6 +147,20 @@ public class UserController : ControllerBase
         if (!vr.IsValid) return BadRequest(vr.Errors);
         
         var ok = await _userService.ChangeStatus(id, dto.status);
+        return Ok(new { statusChanged = ok });
+    }
+    
+    [Authorize(Roles = ""+IUserRole.Admin+","+IUserRole.Branch)] 
+    [HttpPatch("{id:int}/role")]
+    public async Task<IActionResult> ChangeRole(int id, [FromBody] ChangeRoleDto dto)
+    {
+        var vr = await _changeRoleValidator.ValidateAsync(dto);
+        if (!vr.IsValid) return BadRequest(vr.Errors);
+        
+        var userRoleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (userRoleClaim == IUserRole.Branch && dto.role.Equals("admin")) return Forbid("No puedes cambiar el rol a uno de administrador");
+        
+        var ok = await _userService.ChangeRole(id, dto.role);
         return Ok(new { statusChanged = ok });
     }
 

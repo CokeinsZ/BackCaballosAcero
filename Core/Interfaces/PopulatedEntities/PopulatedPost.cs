@@ -14,7 +14,7 @@ public class PopulatedPost: Post
         this.id = p.id;
         this.branch_id = b.id;
         this.description = p.description;
-        this.availableCustomizations = p.availableCustomizations;
+        this.available_customizations = p.available_customizations;
         this.price = p.price;
         this.status = p.status;
         this.created_at = p.created_at;

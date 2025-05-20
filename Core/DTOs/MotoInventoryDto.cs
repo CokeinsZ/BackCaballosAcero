@@ -15,6 +15,7 @@ public class CreateMotoInventoryDto
 public class UpdateMotoInventoryDto
 {
     public int? post_id { get; set; }
+    public int? bill_id { get; set; }
     public string? license_plate { get; set; }
     public string? km { get; set; }
     public JsonElement? customizations { get; set; }

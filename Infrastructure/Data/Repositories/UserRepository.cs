@@ -178,6 +178,15 @@ public class UserRepository: BaseConnection, IUserRepository
         return await connection.ExecuteAsync(query, new { Status = status, Id = id }) > 0;
     }
 
+    public async Task<bool> ChangeRole(int id, string role)
+    {
+        await using var connection = await GetConnectionAsync();
+        const string roleQuery = "SELECT id FROM Role WHERE name = @Role";
+        var roleId = await connection.QuerySingleOrDefaultAsync<int>(roleQuery, new { Role = role });
+        const string query = "UPDATE Users SET role = @RoleId WHERE id = @Id";
+        return await connection.ExecuteAsync(query, new { RoleId = roleId, Id = id }) > 0;
+    }
+
     public async Task Delete(int id)
     {
         await using var connection = await GetConnectionAsync();

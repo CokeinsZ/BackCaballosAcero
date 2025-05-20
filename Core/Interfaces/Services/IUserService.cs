@@ -13,6 +13,7 @@ public interface IUserService
     Task<bool> VerifyUser(VerifyUserDto userDto);
     Task<bool> ChangePassword(ResetPasswordDto userDto, int id);
     Task<bool> ChangeStatus(int id, string status);
+    Task<bool> ChangeRole(int id, string role);
     Task Delete(int id);
     Task SendVerificationCode(int id);
     Task SendVerificationCode(User user);

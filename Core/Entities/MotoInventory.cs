@@ -11,7 +11,7 @@ public class MotoInventory
     public int? post_id { get; set; }
     public int? bill_id { get; set; }
     public string? license_plate { get; set; }
-    public required string km { get; set; }
+    public string? km { get; set; }
     public string? customizations { get; set; }
     public string? status { get; set; }
     public DateTime created_at { get; set; }

@@ -114,6 +114,11 @@ public class UserService: IUserService
         return await _userRepo.ChangeStatus(id, status);
     }
 
+    public async Task<bool> ChangeRole(int id, string role)
+    {
+        return await _userRepo.ChangeRole(id, role);
+    }
+
     public async Task Delete(int id)
     {
         await _userRepo.Delete(id);

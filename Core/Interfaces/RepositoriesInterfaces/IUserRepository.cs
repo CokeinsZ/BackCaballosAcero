@@ -15,6 +15,6 @@ public interface IUserRepository
     Task<bool> VerifyUser(int id);
     Task<bool> ChangePassword(int id, string password);
     Task<bool> ChangeStatus(int id, string status);
-    
+    Task<bool> ChangeRole(int id, string role);
     Task Delete(int id);
 }

@@ -14,6 +14,11 @@ public class UpdateMotoInventoryValidator : AbstractValidator<UpdateMotoInventor
             .GreaterThan(0)
             .When(x => x.post_id.HasValue)
             .WithMessage("El post_id debe ser un entero mayor que 0.");
+        
+        RuleFor(x => x.bill_id)
+            .GreaterThan(0)
+            .When(x => x.bill_id.HasValue)
+            .WithMessage("El bill_id debe ser un entero mayor que 0.");
 
         RuleFor(x => x.license_plate)
             .Matches(LicensePattern)

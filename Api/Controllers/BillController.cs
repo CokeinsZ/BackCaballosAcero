@@ -31,9 +31,9 @@ public class BillController : ControllerBase
     {
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
         var claim = User.FindFirst("branchId")?.Value;
-        if (role == null || claim == null) return Unauthorized();
-        if (role == IUserRole.Branch && int.Parse(claim) != branchId)
-            return Forbid();
+        if (role == null) return Unauthorized("Invalid token");
+        if (role == IUserRole.Branch && (claim == null || int.Parse(claim) != branchId))
+            return Forbid("You don´t have access to this resource" + role + " " + claim);
         return null;
     }
 
@@ -41,9 +41,9 @@ public class BillController : ControllerBase
     {
         var role = User.FindFirst(ClaimTypes.Role)?.Value;
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (role == null || claim == null) return Unauthorized();
-        if (role == IUserRole.User && int.Parse(claim) != userId)
-            return Forbid();
+        if (role == null ) return Unauthorized("No sign in token");
+        if (role == IUserRole.User && (claim == null || int.Parse(claim) != userId))
+            return Forbid("You don´t have access to this resource" + role + " " + claim);
         return null;
     }
 
@@ -121,6 +121,20 @@ public class BillController : ControllerBase
         return Ok(updated);
     }
 
+    [Authorize(Roles = "" + IUserRole.Admin + "," + IUserRole.Branch + "," + IUserRole.User)]
+    [HttpDelete("cancel/{id:int}")]
+    public async Task<IActionResult> Cancel(int id)
+    {
+        var existing = await _service.GetById(id);
+        if (existing == null) return NotFound();
+
+        var err = EnsureAdminOrOwn(existing.user_id.Value);
+        if (err != null) return err;
+
+        var ok = await _service.Cancel(id);
+        return Ok($"canceled: {ok}");
+    }
+    
     [Authorize(Roles = "" + IUserRole.Admin + "," + IUserRole.Branch + "," + IUserRole.User)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)

@@ -4,8 +4,8 @@ namespace Core.Interfaces.PopulatedEntities;
 
 public class PopulatedMotoInventory: MotoInventory
 {
-    public required Motorcycle _moto { get; set; }
-    public required Branch _branch { get; set; }
+    public Motorcycle _moto { get; set; }
+    public Branch _branch { get; set; }
 
     public PopulatedMotoInventory(MotoInventory motoInventory, Motorcycle moto, Branch branch): base()
     {

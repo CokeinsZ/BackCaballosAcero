@@ -1,5 +1,6 @@
 ﻿using Core.DTOs;
 using Core.Entities;
+using Core.Interfaces.PopulatedEntities;
 
 namespace Core.Interfaces.Services;
 
@@ -7,6 +8,7 @@ public interface IMotoInventoryService
 {
     Task<IEnumerable<MotoInventory>> GetByBranch(int branchId);
     Task<MotoInventory?> GetById(int id);
+    Task<PopulatedMotoInventory?> GetPopulatedById(int id);
     Task<IEnumerable<MotoInventory>> GetByPostId(int postId);
     Task<MotoInventory> Create(CreateMotoInventoryDto dto);
     Task<MotoInventory?> Update(UpdateMotoInventoryDto dto, int id);

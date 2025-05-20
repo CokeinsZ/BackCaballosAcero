@@ -12,8 +12,6 @@ public class CreateBillDto
     public double? amount { get; set; }
     public double? discount { get; set; }
     public string? payment_method { get; set; }
-    public IEnumerable<int>? moto_inventories_ids { get; set; }
-
 }
 
 public class UpdateBillDto
@@ -22,5 +20,4 @@ public class UpdateBillDto
     public double? amount { get; set; }
     public double? discount { get; set; }
     public string? payment_method { get; set; }
-    public IEnumerable<int>? moto_inventories_ids { get; set; }
 }

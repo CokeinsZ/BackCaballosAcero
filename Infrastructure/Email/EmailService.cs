@@ -15,8 +15,7 @@ public class EmailService : IEmailService
         _emailSettings = emailSettings.Value;
     }
 
-
-    public async Task SendPurchaseNotification(User user, MotoInventory moto)
+    public async Task SendPurchaseNotification(User user, MotoInventory moto, Branch branch)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
@@ -25,11 +24,7 @@ public class EmailService : IEmailService
 
         var bodyBuilder = new BodyBuilder
         {
-            HtmlBody = HtmlMessage.GetPurchaseNotificationTemplate(
-                user.name,
-                moto.id,
-                moto.status
-            )
+            HtmlBody = HtmlMessage.GetPurchaseNotificationTemplate(user, moto, branch)
         };
         message.Body = bodyBuilder.ToMessageBody();
 
@@ -46,8 +41,8 @@ public class EmailService : IEmailService
             Console.WriteLine($"Error al enviar notificación de compra: {ex.Message}");
         }
     }
-
-    public async Task SendStatusUpdateEmail(User user, MotoInventory moto)
+    
+    public async Task SendStatusUpdateEmail(User user, MotoInventory moto, Branch branch)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
@@ -56,11 +51,7 @@ public class EmailService : IEmailService
 
         var bodyBuilder = new BodyBuilder
         {
-            HtmlBody = HtmlMessage.GetStatusUpdateTemplate(
-                user.name,
-                moto.id,
-                moto.status
-            )
+            HtmlBody = HtmlMessage.GetStatusUpdateTemplate(user, moto, branch)
         };
         message.Body = bodyBuilder.ToMessageBody();
 
@@ -78,6 +69,33 @@ public class EmailService : IEmailService
         }
     }
 
+    public async Task SendCancellationNotification(User user, MotoInventory moto)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
+        message.To.Add(new MailboxAddress(user.name, user.email));
+        message.Subject = "Cancelación de Compra – Caballos de Acero";
+
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = HtmlMessage.GetCancellationTemplate(user, moto)
+        };
+        message.Body = bodyBuilder.ToMessageBody();
+
+        try
+        {
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, SecureSocketOptions.Auto);
+            await smtp.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al enviar notificación de cancelación: {ex.Message}");
+        }
+    }
+
     public async Task SendReadyToPickupEmail(User user, MotoInventory moto, Branch branch)
     {
         var message = new MimeMessage();
@@ -87,11 +105,7 @@ public class EmailService : IEmailService
 
         var bodyBuilder = new BodyBuilder
         {
-            HtmlBody = HtmlMessage.GetReadyToPickupTemplate(
-                user.name,
-                moto.id,
-                branch.country + ", " + branch.city + ", " + branch.address
-            )
+            HtmlBody = HtmlMessage.GetReadyToPickupTemplate(user, moto, branch)
         };
         message.Body = bodyBuilder.ToMessageBody();
 
@@ -108,7 +122,7 @@ public class EmailService : IEmailService
             Console.WriteLine($"Error al enviar correo de recogida: {ex.Message}");
         }
     }
-
+    
     public Task SendResetPasswordEmail(User user, string code)
     {
         throw new NotImplementedException();

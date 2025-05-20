@@ -17,10 +17,6 @@ public class UpdateBillValidator : AbstractValidator<UpdateBillDto>
         RuleFor(x => x.payment_method)
             .Must(m => m is null || ValidMethods.Contains(m))
             .WithMessage($"El payment_method, si se proporciona, debe ser uno de: {string.Join(", ", ValidMethods)}.");
-
-        RuleFor(x => x.moto_inventories_ids)
-            .Must(list => list == null || list.All(id => id > 0))
-            .When(x => x.moto_inventories_ids is not null)
-            .WithMessage("Cada moto_inventories_id debe ser un entero mayor que 0 cuando se proporciona la lista.");
+        
     }
 }

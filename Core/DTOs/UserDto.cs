@@ -47,6 +47,11 @@ public class ChangeStatusDto
     public required string status { get; set; }
 }
 
+public class ChangeRoleDto
+{
+    public required string role { get; set; }
+}
+
 public class VerifyUserDto
 {
     public required string verification_code { get; set; }

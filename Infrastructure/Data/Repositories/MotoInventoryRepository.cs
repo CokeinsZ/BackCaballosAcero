@@ -64,6 +64,13 @@ public class MotoInventoryRepository : BaseConnection, IMotoInventoryRepository
             sb.Append("post_id = @PostId");
             hasSet = true;
         }
+
+        if (dto.bill_id is not null)
+        {
+            if (hasSet) sb.Append(", ");
+            sb.Append("bill_id = @BillId");
+            hasSet = true;
+        }
         if (dto.license_plate is not null)
         {
             if (hasSet) sb.Append(", ");
@@ -90,6 +97,7 @@ public class MotoInventoryRepository : BaseConnection, IMotoInventoryRepository
         {
             Id             = id,
             PostId         = dto.post_id,
+            BillId         = dto.bill_id,           
             LicensePlate   = dto.license_plate,
             Km             = dto.km,
             Customizations = dto.customizations?.GetRawText()

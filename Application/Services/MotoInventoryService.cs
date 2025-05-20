@@ -1,6 +1,7 @@
 ﻿using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces.Email;
+using Core.Interfaces.PopulatedEntities;
 using Core.Interfaces.RepositoriesInterfaces;
 using Core.Interfaces.Services;
 
@@ -9,6 +10,7 @@ namespace Application.Services;
 public class MotoInventoryService : IMotoInventoryService
 {
     private readonly IMotoInventoryRepository _repo;
+    private readonly IMotorcycleRepository _motorcycleRepository;
     private readonly IBillRepository _billRepository;
     private readonly IEmailService _emailService;
     private readonly IBranchRepository _branchRepository;
@@ -26,6 +28,16 @@ public class MotoInventoryService : IMotoInventoryService
 
     public async Task<MotoInventory?> GetById(int id)
         => await _repo.GetById(id);
+
+    public async Task<PopulatedMotoInventory?> GetPopulatedById(int id)
+    {
+        var motoInventory = await GetById(id);
+        if (motoInventory == null) return null;
+        var motorcycle = await _motorcycleRepository.GetById(motoInventory.moto_id);
+        var branch = await _branchRepository.GetById(motoInventory.branch_id);
+        
+        return new PopulatedMotoInventory(motoInventory, motorcycle, branch);
+    }
 
     public async Task<IEnumerable<MotoInventory>> GetByPostId(int postId)
     {
@@ -49,9 +61,9 @@ public class MotoInventoryService : IMotoInventoryService
         {
             var user = await _billRepository.GetUser(motoInventory.bill_id.Value);
             var branch = await _branchRepository.GetById(motoInventory.branch_id);
-            if (status.Equals("Sold")) await _emailService.SendPurchaseNotification(user, motoInventory);
+            if (status.Equals("Sold")) await _emailService.SendPurchaseNotification(user, motoInventory, branch);
             else if (status.Equals("Ready")) await _emailService.SendReadyToPickupEmail(user, motoInventory, branch);
-            else await _emailService.SendStatusUpdateEmail(user, motoInventory);
+            else await _emailService.SendStatusUpdateEmail(user, motoInventory, branch);
         }
 
         return ok;
