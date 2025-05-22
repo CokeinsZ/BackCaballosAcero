@@ -103,6 +103,7 @@ public class BillService: IBillService
         if (available.Count < dto.numberOfMotos)
             throw new Exception("No hay suficientes motos disponibles");
 
+        if (post.available_customizations == null && dto.customizations != null) throw new Exception("El post no permite customizaciones");
         ValidateCustomizations(dto.customizations, post.available_customizations!);
 
         dto.amount = post.price * dto.numberOfMotos;
@@ -112,7 +113,7 @@ public class BillService: IBillService
         foreach (var moto in available)
         {
             await _motoInventoryService.Update(new UpdateMotoInventoryDto { customizations = dto.customizations, bill_id = bill.id}, moto.id);
-            await _motoInventoryService.ChangeStatus(moto.id, "Sold");
+            await _motoInventoryService.AsignBill(moto.id, bill.id);
         }
         
         return bill;

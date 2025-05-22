@@ -15,7 +15,7 @@ public class EmailService : IEmailService
         _emailSettings = emailSettings.Value;
     }
 
-    public async Task SendPurchaseNotification(User user, MotoInventory moto, Branch branch)
+    public async Task SendPurchaseNotification(User user, MotoInventory moto, Branch branch, Bill bill)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
@@ -24,7 +24,7 @@ public class EmailService : IEmailService
 
         var bodyBuilder = new BodyBuilder
         {
-            HtmlBody = HtmlMessage.GetPurchaseNotificationTemplate(user, moto, branch)
+            HtmlBody = HtmlMessage.GetPurchaseNotificationTemplate(user, moto, branch, bill)
         };
         message.Body = bodyBuilder.ToMessageBody();
 

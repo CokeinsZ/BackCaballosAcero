@@ -121,7 +121,7 @@ public static class HtmlMessage
              """;
   }
 
-  public static string GetPurchaseNotificationTemplate(User user, MotoInventory moto, Branch branch)
+  public static string GetPurchaseNotificationTemplate(User user, MotoInventory moto, Branch branch, Bill bill)
   {
     return $$"""
              <!DOCTYPE html>
@@ -145,12 +145,15 @@ public static class HtmlMessage
                  <p>Hola <strong>{{user.name}} {{user.last_name}}</strong>,</p>
                  <p>Gracias por tu compra en <strong>Caballos de Acero</strong>. Aquí los detalles de tu motocicleta:</p>
                  <div class="details">
+                   <p><strong>Bill ID:</strong> {{bill.id}}</p>
+                   <p><strong>Total factura:</strong> {{bill.amount}}</p>
                    <p><strong>Inventario ID:</strong> {{moto.id}}</p>
                    <p><strong>Estado:</strong> {{moto.status}}</p>
                    <p><strong>Customizaciones:</strong> {{moto.customizations ?? "N/A"}}</p>
                    <p><strong>Kilometraje:</strong> {{moto.km ?? "N/A"}}</p>
                    <p><strong>Sucursal:</strong> {{branch.name}} ({{branch.city}}, {{branch.country}})</p>
                    <p><strong>Dirección:</strong> {{branch.city + ", " + (branch.address ?? "N/D")}}</p>
+                   <p><strong>Fecha compra:</strong> {{bill.created_at}}</p>
                  </div>
                  
                  <p style="font-size:.8em;color:#888;">

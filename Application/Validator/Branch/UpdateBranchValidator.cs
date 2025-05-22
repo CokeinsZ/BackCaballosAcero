@@ -7,6 +7,12 @@ public class UpdateBranchValidator : AbstractValidator<UpdateBranchDto>
 {
     public UpdateBranchValidator()
     {
+        RuleFor(x => x.nit)
+            .MaximumLength(10)
+            .Matches(@"^\d+$")
+            .When(x => x.nit is not null)
+            .WithMessage("El nit es obligatorio y puede contener como maximo 10 digitos numericos.");
+        
         RuleFor(x => x.name)
             .MaximumLength(32)
             .When(x => x.name is not null)

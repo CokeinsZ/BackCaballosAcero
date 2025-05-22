@@ -32,13 +32,14 @@ public class BranchRepository: BaseConnection, IBranchRepository
         await using var conn = await GetConnectionAsync();
         const string sql = """
                            INSERT INTO Branches 
-                           (name, country, city, address) 
+                           (nit, name, country, city, address) 
                            VALUES 
-                           (@Name, @Country, @City, @Address) 
+                           (@Nit, @Name, @Country, @City, @Address) 
                            RETURNING *
                            """;
         return await conn.QuerySingleAsync<Branch>(sql, new
         {
+            Nit = dto.nit,
             Name = dto.name.ToLower(),
             Country = dto.country.ToLower(),
             City = dto.city.ToLower(),
@@ -53,8 +54,14 @@ public class BranchRepository: BaseConnection, IBranchRepository
         var sb = new StringBuilder("UPDATE Branches SET ");
         var hasSet = false;
 
+        if (dto.nit is not null)
+        {
+            sb.Append("nit = @Nit");
+            hasSet = true;
+        }
         if (dto.name is not null)
         {
+            if (hasSet) sb.Append(", ");
             sb.Append("name = @Name");
             hasSet = true;
         }
@@ -84,6 +91,7 @@ public class BranchRepository: BaseConnection, IBranchRepository
 
         return await conn.QuerySingleOrDefaultAsync<Branch>(sb.ToString(), new
         {
+            Nit = dto.nit,
             Name = dto.name?.ToLower(),
             Country = dto.country?.ToLower(),
             City = dto.city?.ToLower(),

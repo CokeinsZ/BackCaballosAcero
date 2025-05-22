@@ -76,6 +76,7 @@ CREATE TABLE Refresh_Tokens
 CREATE TABLE Branches
 (
     id      SERIAL PRIMARY KEY,
+    nit     VARCHAR(10) NOT NULL UNIQUE,
     name    VARCHAR(32) NOT NULL,
     country VARCHAR(32) NOT NULL,
     city    VARCHAR(32) NOT NULL,
@@ -131,6 +132,7 @@ CREATE TABLE MotoInventory
     branch_id      INT NOT NULL,
     post_id        INT                  DEFAULT NULL,
     bill_id        INT NULL,
+    isNew          BOOLEAN              DEFAULT TRUE,
     license_plate  VARCHAR(7)           DEFAULT NULL,
     km             VARCHAR(7)           DEFAULT '0',
     customizations JSONB,

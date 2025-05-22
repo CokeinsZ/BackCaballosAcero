@@ -61,8 +61,7 @@ public class MotoInventoryService : IMotoInventoryService
         {
             var user = await _billRepository.GetUser(motoInventory.bill_id.Value);
             var branch = await _branchRepository.GetById(motoInventory.branch_id);
-            if (status.Equals("Sold")) await _emailService.SendPurchaseNotification(user, motoInventory, branch);
-            else if (status.Equals("Ready")) await _emailService.SendReadyToPickupEmail(user, motoInventory, branch);
+            if (status.Equals("Ready")) await _emailService.SendReadyToPickupEmail(user, motoInventory, branch);
             else await _emailService.SendStatusUpdateEmail(user, motoInventory, branch);
         }
 
@@ -75,6 +74,11 @@ public class MotoInventoryService : IMotoInventoryService
         if (motoInventory.bill_id != null) throw new Exception("Moto already has a bill");
         if (motoInventory.status != "Available") throw new Exception("Moto not available");
         
+        var bill = await _billRepository.GetById(billId);
+        var user = await _billRepository.GetUser(motoInventory.bill_id.Value);
+        var branch = await _branchRepository.GetById(motoInventory.branch_id);
+        await _emailService.SendPurchaseNotification(user, motoInventory, branch, bill);
+
         return await _repo.AsignBill(id, billId);
     }
 

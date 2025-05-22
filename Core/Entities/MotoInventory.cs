@@ -10,6 +10,7 @@ public class MotoInventory
     public int branch_id { get; set; }
     public int? post_id { get; set; }
     public int? bill_id { get; set; }
+    public bool? is_new { get; set; }
     public string? license_plate { get; set; }
     public string? km { get; set; }
     public string? customizations { get; set; }
