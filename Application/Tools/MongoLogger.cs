@@ -22,6 +22,17 @@ public static class MongoLogger
                 var client = new MongoClient(connectionString);
                 var database = client.GetDatabase(databaseName);
                 _logsCollection = database.GetCollection<LogEntry>(collectionName);
+
+                // <-- Agregar índices para acelerar filtros
+                _logsCollection.Indexes.CreateMany(new[]
+                {
+                    new CreateIndexModel<LogEntry>(
+                        Builders<LogEntry>.IndexKeys.Ascending(le => le.Entity)),
+                    new CreateIndexModel<LogEntry>(
+                        Builders<LogEntry>.IndexKeys.Ascending(le => le.Level)),
+                    new CreateIndexModel<LogEntry>(
+                        Builders<LogEntry>.IndexKeys.Descending(le => le.Timestamp))
+                });
             }
         }
     }
