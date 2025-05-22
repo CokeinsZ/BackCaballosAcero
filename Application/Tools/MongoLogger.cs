@@ -36,7 +36,7 @@ public static class MongoLogger
         await Log("ERROR", message, entity, metadata, ex);
     }
 
-    private static async void Log(string level, string message, string entity, dynamic metadata = null, Exception ex = null)
+    private static async Task Log(string level, string message, string entity, dynamic metadata = null, Exception ex = null)
     {
         try
         {
