@@ -117,7 +117,6 @@ public class BillService: IBillService
             await _motoInventoryService.AsignBill(moto.id, bill.id);
         }
         
-        await MongoLogger.LogInformation("Venta realizada", "Bill", new { BillId = bill.id, PostId = post.id, NumberOfMotos = dto.numberOfMotos });
         return bill;
     }
 
@@ -169,7 +168,6 @@ public class BillService: IBillService
 
         }
 
-        await MongoLogger.LogInformation("Venta cancelada", "Bill", new { BillId = id });
         return await _repo.Delete(id);
     }
 

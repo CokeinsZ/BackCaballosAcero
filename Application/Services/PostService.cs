@@ -72,9 +72,7 @@ public class PostService: IPostService
                 await _postRepository.Delete(post.id);
                 throw new Exception($"Moto in inventory with id {motoInventoryId} not available for sell");
             }
-
-            await MongoLogger.LogInformation("Post creado", "Post",
-                new { PostId = post.id, MotoInventoryId = motoInventoryId });
+            
             await _motoInventoryRepository.Update(new UpdateMotoInventoryDto {post_id = post.id}, motoInventoryId);
             
         }

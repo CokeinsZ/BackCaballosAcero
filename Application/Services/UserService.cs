@@ -61,8 +61,6 @@ public class UserService: IUserService
         var newUser = await _userRepo.Add(userDto);
 
         await SendVerificationCode(newUser);
-        await MongoLogger.LogInformation("User registered", "Users",
-            new { UserId = newUser.id, UserName = newUser.name });
         
         return newUser;
     }
@@ -86,9 +84,6 @@ public class UserService: IUserService
         if (string.IsNullOrWhiteSpace(storedCode)) throw new Exception("User have no security codes");
         
         if (storedCode != userDto.verification_code) throw new Exception("Invalid verification code");
-
-        await MongoLogger.LogInformation("User verified", "Users", 
-            new { UserId = user.id, UserName = user.name });
         
         await _verificationCodesRepo.Remove(user.id);
         return await _userRepo.VerifyUser(user.id);
@@ -109,9 +104,6 @@ public class UserService: IUserService
 
         var hashedPassword = _passwordHasher.HashPassword(user, userDto.password);
         userDto.password = hashedPassword;
-
-        await MongoLogger.LogInformation("User password changed", "Users",
-            new { UserId = user.id, UserName = user.name });
         
         await _verificationCodesRepo.Remove(user.id);
         return await _userRepo.ChangePassword(id, userDto.password);
@@ -119,21 +111,16 @@ public class UserService: IUserService
 
     public async Task<bool> ChangeStatus(int id, string status)
     {
-        await MongoLogger.LogInformation("User status changed", "Users", 
-            new { UserId = id, NewStatus = status });
         return await _userRepo.ChangeStatus(id, status);
     }
 
     public async Task<bool> ChangeRole(int id, string role)
     {
-        await MongoLogger.LogInformation("User role changed", "Users", 
-            new { UserId = id, NewRole = role });
         return await _userRepo.ChangeRole(id, role);
     }
 
     public async Task Delete(int id)
     {
-        await MongoLogger.LogInformation("User deleted", "Users", new { UserId = id });
         await _userRepo.Delete(id);
     }
 

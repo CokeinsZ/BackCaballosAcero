@@ -47,7 +47,6 @@ public class MotoInventoryService : IMotoInventoryService
 
     public async Task<MotoInventory> Create(CreateMotoInventoryDto dto)
     {
-        await MongoLogger.LogInformation("Moto ingresada al inventario", "MotoInventory", new { MotoInventoryId = dto.moto_id, BranchId = dto.branch_id });
         return await _repo.Create(dto);
     }
 
@@ -69,7 +68,6 @@ public class MotoInventoryService : IMotoInventoryService
             else await _emailService.SendStatusUpdateEmail(user, motoInventory, branch);
         }
 
-        await MongoLogger.LogInformation("Estado de la moto actualizado", "MotoInventory", new { MotoInventoryId = id, NewStatus = status });
         return ok;
     }
 
@@ -84,13 +82,11 @@ public class MotoInventoryService : IMotoInventoryService
         var branch = await _branchRepository.GetById(motoInventory.branch_id);
         await _emailService.SendPurchaseNotification(user, motoInventory, branch, bill);
 
-        await MongoLogger.LogInformation("Moto vendida", "MotoInventory", new { MotoInventoryId = id, BillId = billId });
         return await _repo.AsignBill(id, billId);
     }
 
     public async Task<bool> Delete(int id)
     {
-        await MongoLogger.LogInformation("Moto eliminada del inventario", "MotoInventory", new { MotoInventoryId = id });
         return await _repo.Delete(id);
     }
 }

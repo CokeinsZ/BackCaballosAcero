@@ -6,8 +6,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
-      - db
-      - mongo
+      db:
+        condition: service_started
+      mongo: 
+        condition: service_healthy
 
   db:
     image: postgres:16
@@ -33,6 +35,11 @@ services:
     ports:
       - "27017:27017"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh", "--username", "root", "--password", "MongoRootPass123", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data: {}
