@@ -1,4 +1,5 @@
-﻿using Core.DTOs;
+﻿using Application.Tools;
+using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces.PopulatedEntities;
 using Core.Interfaces.RepositoriesInterfaces;
@@ -71,7 +72,9 @@ public class PostService: IPostService
                 await _postRepository.Delete(post.id);
                 throw new Exception($"Moto in inventory with id {motoInventoryId} not available for sell");
             }
-            
+
+            await MongoLogger.LogInformation("Post creado", "Post",
+                new { PostId = post.id, MotoInventoryId = motoInventoryId });
             await _motoInventoryRepository.Update(new UpdateMotoInventoryDto {post_id = post.id}, motoInventoryId);
             
         }
@@ -141,6 +144,7 @@ public class PostService: IPostService
 
     public async Task<bool> Delete(int id)
     {
+        MongoLogger.LogInformation("Post eliminado", "Post", new { PostId = id });
         return await _postRepository.Delete(id);
     }
 }

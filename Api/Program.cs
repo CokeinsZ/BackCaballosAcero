@@ -26,6 +26,8 @@ using Core.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+MongoLogger.Initialize(builder.Configuration);
+
 // Configurar servicios
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();

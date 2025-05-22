@@ -71,6 +71,12 @@ public class MotoInventoryRepository : BaseConnection, IMotoInventoryRepository
             sb.Append("bill_id = @BillId");
             hasSet = true;
         }
+        if (dto.is_new is not null)
+        {
+            if (hasSet) sb.Append(", ");
+            sb.Append("is_new = @IsNew");
+            hasSet = true;
+        }
         if (dto.license_plate is not null)
         {
             if (hasSet) sb.Append(", ");

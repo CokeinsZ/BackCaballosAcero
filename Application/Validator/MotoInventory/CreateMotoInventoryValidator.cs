@@ -22,6 +22,10 @@ public class CreateMotoInventoryValidator : AbstractValidator<CreateMotoInventor
             .GreaterThan(0)
             .When(x => x.post_id.HasValue)
             .WithMessage("El post_id, si se proporciona, debe ser un entero mayor que 0.");
+        
+        RuleFor(x => x.is_new)
+            .NotNull()
+            .WithMessage("El campo is_new es requerido y debe ser un valor booleano.");
 
         RuleFor(x => x.license_plate)
             .Matches(LicensePattern)

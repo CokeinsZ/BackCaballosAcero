@@ -132,7 +132,7 @@ CREATE TABLE MotoInventory
     branch_id      INT NOT NULL,
     post_id        INT                  DEFAULT NULL,
     bill_id        INT NULL,
-    isNew          BOOLEAN              DEFAULT TRUE,
+    is_new          BOOLEAN              DEFAULT TRUE,
     license_plate  VARCHAR(7)           DEFAULT NULL,
     km             VARCHAR(7)           DEFAULT '0',
     customizations JSONB,
