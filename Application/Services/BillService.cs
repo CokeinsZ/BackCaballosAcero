@@ -114,7 +114,6 @@ public class BillService: IBillService
         foreach (var moto in available)
         {
             await _motoInventoryService.Update(new UpdateMotoInventoryDto { customizations = dto.customizations, bill_id = bill.id}, moto.id);
-            await _motoInventoryService.AsignBill(moto.id, bill.id);
         }
         
         return bill;
