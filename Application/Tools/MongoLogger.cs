@@ -6,7 +6,7 @@ namespace Application.Tools;
 public static class MongoLogger
 {
     private static IMongoCollection<LogEntry> _logsCollection;
-    private static readonly object _lock = new object();
+    private static readonly Lock _lock = new Lock();
 
     // Configuración inicial
     public static void Initialize(IConfiguration config)
