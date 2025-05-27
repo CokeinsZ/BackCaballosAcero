@@ -15,13 +15,15 @@ public class BillService: IBillService
     private readonly IMotoInventoryService _motoInventoryService;
     private readonly IPostService _postService;
     private readonly IEmailService _emailService;
+    private readonly Logger _logger;
 
-    public BillService(IBillRepository repo, IMotoInventoryService motoInventoryService, IPostService postService, IEmailService emailService)
+    public BillService(IBillRepository repo, IMotoInventoryService motoInventoryService, IPostService postService, IEmailService emailService, Logger logger)
     {
         _repo = repo;
         _motoInventoryService = motoInventoryService;
         _postService = postService;
         _emailService = emailService;
+        _logger = logger;
     }
 
     private async Task<PopulatedBill> PopulateBill(Bill bill)
@@ -117,6 +119,7 @@ public class BillService: IBillService
             await _motoInventoryService.AsignBill(moto.id, bill.id);
         }
         
+        await _logger.LogInformation("Venta realizada", "Bill", new { BillId = bill.id, PostId = post.id, NumberOfMotos = dto.numberOfMotos });
         return bill;
     }
 
@@ -168,6 +171,7 @@ public class BillService: IBillService
 
         }
 
+        await _logger.LogInformation("Venta cancelada", "Bill", new { BillId = id });
         return await _repo.Delete(id);
     }
 

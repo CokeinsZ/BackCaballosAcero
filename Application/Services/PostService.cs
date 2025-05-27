@@ -12,12 +12,14 @@ public class PostService: IPostService
     private readonly IPostRepository _postRepository;
     private readonly IBranchRepository _branchRepository;
     private readonly IMotoInventoryRepository _motoInventoryRepository;
+    private readonly Logger _logger;
     
-    public PostService(IPostRepository postRepository, IBranchRepository branch, IMotoInventoryRepository motoInventoryRepository)
+    public PostService(IPostRepository postRepository, IBranchRepository branch, IMotoInventoryRepository motoInventoryRepository, Logger logger)
     {
         _postRepository = postRepository;
         _branchRepository = branch;
         _motoInventoryRepository = motoInventoryRepository;
+        _logger = logger;
     }
     
     public async Task<IEnumerable<PopulatedPost>> GetByBranch(int branchId)
@@ -73,6 +75,8 @@ public class PostService: IPostService
                 throw new Exception($"Moto in inventory with id {motoInventoryId} not available for sell");
             }
             
+            await _logger.LogInformation("Post creado", "Post",
+                new { PostId = post.id, MotoInventoryId = motoInventoryId });
             await _motoInventoryRepository.Update(new UpdateMotoInventoryDto {post_id = post.id}, motoInventoryId);
             
         }
@@ -141,8 +145,8 @@ public class PostService: IPostService
     }
 
     public async Task<bool> Delete(int id)
-    {
-        MongoLogger.LogInformation("Post eliminado", "Post", new { PostId = id });
+    { 
+        await _logger.LogInformation("Post eliminado", "Post", new { PostId = id });
         return await _postRepository.Delete(id);
     }
 }

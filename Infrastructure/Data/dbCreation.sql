@@ -157,6 +157,17 @@ CREATE TABLE MotoInventory
         ON DELETE CASCADE
 );
 
+CREATE TABLE Logs
+(
+    id        SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    level     VARCHAR(16) NOT NULL,
+    message   TEXT        NOT NULL,
+    entity    VARCHAR(64) NOT NULL,
+    exception TEXT,
+    metadata  JSONB
+);
+
 INSERT INTO Roles (id, name) VALUES (1, 'user'), (2, 'admin'), (3, 'branch');
 
 

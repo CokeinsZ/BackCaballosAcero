@@ -106,7 +106,10 @@ internal static class ServiceCollectionExtensions
         
         builder.Services.AddScoped<IBillRepository>(provider =>
             new BillRepository(builder.Configuration.GetConnectionString("Postgres")!));
-        
+
+        builder.Services.AddScoped<ILogsRepository>(provider =>
+            new LogsRepository(builder.Configuration.GetConnectionString("Postgres")!));
+
     }
 
     public static void ConfigureOptions(this WebApplicationBuilder builder)
@@ -151,7 +154,8 @@ internal static class ServiceCollectionExtensions
     public static void ConfigureApplicationServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IJWTService, JWTService>();
-        builder.Services.AddScoped<JWTService>();  
+        builder.Services.AddScoped<JWTService>();
+        builder.Services.AddScoped<Logger>();
         builder.Services.AddScoped<EncryptionHelper>(provider =>
             new EncryptionHelper(builder.Configuration.GetSection("Encryption")["Key"]!, builder.Configuration.GetSection("Encryption")["Iv"]!));
         builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
