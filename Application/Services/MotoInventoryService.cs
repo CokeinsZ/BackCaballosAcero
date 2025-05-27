@@ -15,13 +15,15 @@ public class MotoInventoryService : IMotoInventoryService
     private readonly IBillRepository _billRepository;
     private readonly IEmailService _emailService;
     private readonly IBranchRepository _branchRepository;
+    private readonly Logger _logger;
 
-    public MotoInventoryService(IMotoInventoryRepository repo, IBillRepository billRepository, IEmailService emailService, IBranchRepository branchRepository)
+    public MotoInventoryService(IMotoInventoryRepository repo, IBillRepository billRepository, IEmailService emailService, IBranchRepository branchRepository, Logger logger)
     {
         _repo = repo;
         _billRepository = billRepository;
         _emailService = emailService;
         _branchRepository = branchRepository;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<MotoInventory>> GetByBranch(int branchId)
@@ -47,6 +49,7 @@ public class MotoInventoryService : IMotoInventoryService
 
     public async Task<MotoInventory> Create(CreateMotoInventoryDto dto)
     {
+        await _logger.LogInformation("Moto ingresada al inventario", "MotoInventory", new { MotoInventoryId = dto.moto_id, BranchId = dto.branch_id });
         return await _repo.Create(dto);
     }
 
@@ -68,6 +71,7 @@ public class MotoInventoryService : IMotoInventoryService
             else await _emailService.SendStatusUpdateEmail(user, motoInventory, branch);
         }
 
+        await _logger.LogInformation("Estado de la moto actualizado", "MotoInventory", new { MotoInventoryId = id, NewStatus = status });
         return ok;
     }
 
@@ -82,11 +86,13 @@ public class MotoInventoryService : IMotoInventoryService
         var branch = await _branchRepository.GetById(motoInventory.branch_id);
         await _emailService.SendPurchaseNotification(user, motoInventory, branch, bill);
 
+        await _logger.LogInformation("Moto vendida", "MotoInventory", new { MotoInventoryId = id, BillId = billId });
         return await _repo.AsignBill(id, billId);
     }
 
     public async Task<bool> Delete(int id)
     {
+        await _logger.LogInformation("Moto eliminada del inventario", "MotoInventory", new { MotoInventoryId = id });
         return await _repo.Delete(id);
     }
 }
